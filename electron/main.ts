@@ -4,7 +4,9 @@ import path from 'node:path'
 import { createTray } from './tray'
 import { startCursorFeed } from './cursor'
 import { registerWindowControls } from './interaction'
+import { registerActivity } from './activity'
 import { startUpdates } from './updater'
+import { keepOnScreen, savedPosition } from './windowState'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -44,14 +46,16 @@ if (!isFirstInstance) {
   })
 }
 
+/** Room for the buddy in the middle and the settings panel on either side. Empty space is click-through, so the extra size never gets in the way. */
+const WINDOW_SIZE = { width: 860, height: 620 }
+
 function createWindow() {
   win = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
     frame: false,
-    // Room for the buddy in the middle and the settings panel on either side.
-    // Empty space is click-through, so the extra size never gets in the way.
-    width: 860,
-    height: 620,
+    ...WINDOW_SIZE,
+    // Back where you left it; the very first time, the middle of the screen.
+    ...savedPosition(WINDOW_SIZE),
     resizable: false,
     transparent: true,
     alwaysOnTop: true,
@@ -79,6 +83,7 @@ function createWindow() {
 
   createTray(win, startUpdates(win))
   startCursorFeed(win)
+  keepOnScreen(win)
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -102,5 +107,6 @@ app.on('activate', () => {
 app.whenReady().then(() => {
   if (!isFirstInstance) return
   registerWindowControls()
+  registerActivity()
   createWindow()
 })

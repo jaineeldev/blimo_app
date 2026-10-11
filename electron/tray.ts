@@ -1,9 +1,12 @@
-import { Tray, Menu, BrowserWindow, app, ipcMain, nativeImage, type MenuItemConstructorOptions } from 'electron'
+import { Tray, Menu, BrowserWindow, app, globalShortcut, ipcMain, nativeImage, type MenuItemConstructorOptions } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import type { Updates } from './updater'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+/** Shows or hides the buddy from anywhere, for screen-sharing and presenting. */
+const TOGGLE_SHORTCUT = 'CommandOrControl+Alt+B'
 
 /** The menu's update line, which follows the updater from checking through to ready. */
 function updateItem(updates: Updates): MenuItemConstructorOptions {
@@ -25,11 +28,16 @@ export function createTray(win: BrowserWindow, updates: Updates) {
   // Shown for a moment at startup, until the app draws your own buddy for the tray.
   const iconPath = path.join(process.env.VITE_PUBLIC ?? path.join(__dirname, '../public'), 'tray-icon.png')
   const tray = new Tray(nativeImage.createFromPath(iconPath))
+  const toggle = () => (win.isVisible() ? win.hide() : win.show())
+
+  // Another app may already own the shortcut; then the menu just doesn't mention it.
+  const shortcut = globalShortcut.register(TOGGLE_SHORTCUT, toggle) ? TOGGLE_SHORTCUT : undefined
+  app.once('will-quit', () => globalShortcut.unregister(TOGGLE_SHORTCUT))
 
   const menu = () =>
     Menu.buildFromTemplate([
-      { label: 'Show', click: () => win.show() },
-      { label: 'Hide', click: () => win.hide() },
+      { label: 'Show', click: () => win.show(), accelerator: shortcut, registerAccelerator: false },
+      { label: 'Hide', click: () => win.hide(), accelerator: shortcut, registerAccelerator: false },
       { type: 'separator' },
       {
         label: 'Customise…',
@@ -75,7 +83,7 @@ export function createTray(win: BrowserWindow, updates: Updates) {
   updates.onChange(() => {
     if (!tray.isDestroyed()) tray.setContextMenu(menu())
   })
-  tray.on('click', () => (win.isVisible() ? win.hide() : win.show()))
+  tray.on('click', toggle)
 
   // The renderer sends the buddy drawn at 1x and 2x, so it stays crisp on high-DPI screens.
   ipcMain.removeAllListeners('tray:set-icon')

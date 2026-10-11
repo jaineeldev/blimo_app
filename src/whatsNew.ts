@@ -5,6 +5,15 @@
  */
 export const WHATS_NEW: { version: string; notes: string[] }[] = [
   {
+    version: '0.3.0',
+    notes: [
+      "I remember where you left me now. If a screen disappears, I'll hop back onto one you've still got.",
+      "Typing counts as being around now, so I won't doze off while you're writing.",
+      "I get bored after 2 minutes on my own and nod off after 5, with little z's floating up.",
+      "Press Ctrl+Alt+B to hide me or bring me back. Handy when you're sharing your screen.",
+    ],
+  },
+  {
     version: '0.2.0',
     notes: [
       'I keep myself up to date now. Watch for the little ring over my head when a new version is on its way.',

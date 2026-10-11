@@ -219,6 +219,39 @@ function Hearts({ look }: { look: BuddyLook }) {
   )
 }
 
+const ZZZ_COLOUR = toHex(oklch(0.72, 0.09, 265))
+/** A z, drawn with one stroke. */
+const ZED = 'M-2.8 -2.8H2.8L-2.8 2.8H2.8'
+/** Waits this long after nodding off, so the brief sleepy face at startup doesn't flash them. */
+const ZZZ_DELAY_S = 1.4
+/** Three z's on one path, a third of a loop apart, so they rise in a steady stream. */
+const ZZZ_STAGGER_S = [0, 0.9, 1.8]
+
+/** Little z's that drift up from above its head while it sleeps. `top` is the top of its body. */
+function Zzz({ look, top }: { look: BuddyLook; top: number }) {
+  // Off the top corner of the head, so they rise clear of the body instead of over it.
+  const x = look.eyes[1].cx + look.eyes[1].hw + 2
+  const y = top + 1
+  return (
+    <motion.g
+      stroke={ZZZ_COLOUR}
+      fill="none"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { delay: ZZZ_DELAY_S, duration: 0.4 } }}
+      exit={{ opacity: 0, transition: { duration: 0.3 } }}
+    >
+      {ZZZ_STAGGER_S.map((delay, i) => (
+        <g key={i} className="b-zzz-slot" transform={`translate(${x} ${y})`} style={{ '--i': i } as CSSProperties}>
+          <path className="b-zzz" d={ZED} style={{ animationDelay: `${ZZZ_DELAY_S + delay}s` }} />
+        </g>
+      ))}
+    </motion.g>
+  )
+}
+
 interface FaceProps extends Omit<BuddyProps, 'name' | 'overrides'> {
   name: string
   look: BuddyLook
@@ -349,7 +382,10 @@ function Face({ name, look, mood, size = 200, gaze = true, bounce = 0, pressed =
                 </motion.g>
               </motion.g>
             </motion.g>
-            <AnimatePresence>{expression.effect === 'hearts' && <Hearts key="hearts" look={look} />}</AnimatePresence>
+            <AnimatePresence>
+              {expression.effect === 'hearts' && <Hearts key="hearts" look={look} />}
+              {expression.effect === 'zzz' && <Zzz key="zzz" look={look} top={hangY} />}
+            </AnimatePresence>
           </motion.svg>
         </div>
       </div>

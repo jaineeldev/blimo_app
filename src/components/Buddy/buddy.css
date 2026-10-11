@@ -132,6 +132,28 @@
   }
 }
 
+/* Sleepy: z's drift up and away from the head, growing as they go, one after another. */
+.b-zzz {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: b-zzz 2.7s ease-out infinite both;
+}
+
+@keyframes b-zzz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(9px, -16px) scale(1.25);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .b-breathe,
   .b-bob,
@@ -144,5 +166,15 @@
   .b-heart {
     animation: none;
     opacity: 1;
+  }
+
+  /* Without motion, the z's sit still in a rising line instead. */
+  .b-zzz {
+    animation: none;
+    opacity: 1;
+  }
+
+  .b-zzz-slot {
+    translate: calc(var(--i) * 3.5px) calc(var(--i) * -7px);
   }
 }

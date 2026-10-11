@@ -56,7 +56,7 @@ export interface Expression {
   rate: number
   blink: boolean
   /** Floating marks drawn around the buddy. */
-  effect?: 'hearts'
+  effect?: 'hearts' | 'zzz'
 }
 
 const EYE: EyePose = { sx: 1, sy: 1, bend: 0, heart: 0, tilt: 0, inward: 0, lift: 0, lock: 0 }
@@ -105,6 +105,7 @@ export const EXPRESSIONS: Record<BuddyState, Expression> = {
     pose: pose({ sx: 1.6, sy: 0.16, lift: -0.3, lock: 1 }, { bodyY: 1.8, squash: 0.06, gaze: 0.05 }),
     rate: 1.9,
     blink: false,
+    effect: 'zzz',
   },
 
   // Small, drawn together and shivering.

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useBuddyStore } from '../stores/buddyStore'
 
-/** Gets bored after this long without the mouse moving, and falls asleep after the second. */
+/** Gets bored after this long without any input, and falls asleep after the second. */
 const BORED_AFTER_MS = 2 * 60_000
-const ASLEEP_AFTER_MS = 6 * 60_000
-const IDLE_CHECK_MS = 5_000
+const ASLEEP_AFTER_MS = 5 * 60_000
+/** Often enough that typing wakes it within a second; the mouse wakes it instantly through the cursor feed. */
+const IDLE_CHECK_MS = 1_000
 
 /** Two clicks closer than this startle it. */
 const DOUBLE_CLICK_MS = 260
@@ -115,13 +116,20 @@ export function useReactions() {
     }
   }, [])
 
-  // Gets bored, then sleepy, when the mouse stops moving for a while.
+  // Gets bored, then sleepy, when you leave the computer alone for a while. In the app any input
+  // counts, typing included; in a plain browser only the pointer can be seen.
   useEffect(() => {
     const s = state.current
-    const check = window.setInterval(() => {
-      const away = Date.now() - s.lastMove
+    const check = window.setInterval(async () => {
+      const bridge = window.buddy
+      const away = bridge ? (await bridge.getIdleSeconds()) * 1000 : Date.now() - s.lastMove
       const next: Idle = away > ASLEEP_AFTER_MS ? 'asleep' : away > BORED_AFTER_MS ? 'bored' : 'awake'
       if (next === s.idle) return
+      // Coming back gets a little wake-up; drifting off just changes the mood.
+      if (next === 'awake') {
+        handlers.noticeMovement()
+        return
+      }
       s.idle = next
       handlers.refreshAmbient()
     }, IDLE_CHECK_MS)

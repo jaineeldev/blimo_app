@@ -47,6 +47,7 @@ contextBridge.exposeInMainWorld('buddy', {
   setClickThrough: (through: boolean) => ipcRenderer.send('window:click-through', through),
   dragStart: () => ipcRenderer.send('window:drag-start'),
   dragEnd: () => ipcRenderer.send('window:drag-end'),
+  getIdleSeconds: () => ipcRenderer.invoke('system:idle-seconds'),
   setAlwaysOnTop: (onTop: boolean) => ipcRenderer.send('window:always-on-top', onTop),
   getScreenSpace: () => ipcRenderer.invoke('window:screen-space'),
   setTrayIcon: (icon: { x1: string; x2: string; tooltip: string }) => ipcRenderer.send('tray:set-icon', icon),

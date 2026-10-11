@@ -57,6 +57,8 @@ interface Window {
     /** The main process moves the window with the cursor between these two calls. */
     dragStart(): void
     dragEnd(): void
+    /** Seconds since any keyboard or mouse input on the computer. */
+    getIdleSeconds(): Promise<number>
     setAlwaysOnTop(onTop: boolean): void
     getScreenSpace(): Promise<import('../src/stores/buddyStore').ScreenSpace>
     /** Your buddy drawn at 16px and 32px as PNG data URLs, plus the tray tooltip. */

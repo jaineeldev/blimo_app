@@ -1,4 +1,5 @@
 import { BrowserWindow, ipcMain, screen, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron'
+import { rememberPosition } from './windowState'
 
 /** Faster than the display, so the buddy stays right under the cursor while carried. */
 const DRAG_MS = 1000 / 120
@@ -96,7 +97,12 @@ export function registerWindowControls() {
     drag = { win, timer }
   })
 
-  ipcMain.on('window:drag-end', stopDrag)
+  // Let go: it stays right where it was dropped, and remembers the spot for next time.
+  ipcMain.on('window:drag-end', (event) => {
+    const win = drag?.win ?? windowOf(event)
+    stopDrag()
+    if (win) rememberPosition(win)
+  })
 
   ipcMain.on('window:always-on-top', (event, onTop: boolean) => {
     windowOf(event)?.setAlwaysOnTop(onTop)

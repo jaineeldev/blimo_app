@@ -45,12 +45,14 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 </p>
 
 - Press on it and it squishes under your cursor, then springs back when you let go. Pet it and it's happy, and now and then it winks back. Double-click it and it jumps, startled. Keep petting it and it falls in love.
-- Pick it up and it looks surprised. Carry it around and it swings along behind your cursor, then sways to a stop. Drop it and it squashes as it lands. Shake it while you carry it and it gets dizzy.
+- Pick it up and it looks surprised. Carry it around and it swings along behind your cursor, then sways to a stop. Drop it and it squashes as it lands, right where you put it. Shake it while you carry it and it gets dizzy.
 - Move your cursor onto it and it perks up. Hover a moment and it tilts its head, curious.
-- Leave your computer alone and it gets bored, then dozes off. It wakes up with a start when you come back.
+- Leave your computer alone and it gets bored after 2 minutes, then dozes off after 5 with little z's floating up. Typing counts as being around, so it won't nod off while you write. It wakes up with a start when you come back.
 - Give it a new look and it pops up, surprised. Start the app and it wakes up with a stretch.
 
-**Never in the way.** Only the buddy itself catches your mouse. The space around it lets clicks straight through to whatever is underneath.
+**Never in the way.** Only the buddy itself catches your mouse. The space around it lets clicks straight through to whatever is underneath. Press **Ctrl+Alt+B** to hide it or bring it back, handy when you're sharing your screen.
+
+**Stays where you put it.** It remembers where you left it between launches, and hops back onto a screen if the one it was on disappears.
 
 **A warm welcome.** The first time you open DesktopBuddy, your new buddy introduces itself in speech bubbles. You name it (its face changes as you type), then try petting it, carrying it and giving it a new look. You can skip it, or replay it any time from the tray.
 
@@ -91,6 +93,7 @@ You only need to install it once. After that it keeps itself up to date, and you
 **What it can and can't access.** DesktopBuddy needs no admin rights and asks for no special permissions.
 
 - It reads where your mouse pointer is, so its eyes can follow it.
+- It checks how long it's been since you last used your keyboard or mouse, so it knows when you're away. It never sees what you type.
 - It saves your buddy's name and settings on your PC.
 - It connects to GitHub, and nothing else, to check for new versions. It doesn't collect or send any data about you.
 - It starts with Windows only if you tick that option in the tray.
@@ -102,7 +105,7 @@ Found a bug or have an idea? [Open an issue](https://github.com/jaineeldev/deskt
 
 ## Coming soon
 
-- **Feels at home.** It remembers where you left it, drops to your taskbar when you let go of it mid-air, and drifts off with floating z's.
+- **More to play with.** It peeks out from the edge of your screen, melts when you give it belly rubs, and gets dizzy just watching you whip the cursor around.
 - **Notices what you're up to.** It bops along to your music, watches videos with you, and steps aside when one goes fullscreen.
 - **Knows your PC.** It reacts to your CPU and memory: stressed when your machine is working hard, sleepy when it's quiet. A small panel beside it shows CPU, RAM and the time.
 - **Personality.** Time-of-day greetings and little comments in speech bubbles.
@@ -180,6 +183,8 @@ desktop_buddy/
 │   ├── tray.ts              # Tray menu, with your buddy as the tray icon
 │   ├── cursor.ts            # Feeds the cursor position so the eyes can follow it
 │   ├── interaction.ts       # Click-through, dragging, carry speed, shake detection, always-on-top
+│   ├── windowState.ts       # Remembers where the buddy was left, and keeps it on a screen
+│   ├── activity.ts          # Time since any keyboard or mouse input, for boredom and sleep
 │   ├── updater.ts           # Checks GitHub Releases, downloads updates, installs on restart
 │   └── stats-bridge.ts      # (planned) Calls the C addon, exposes via IPC
 ├── src/
@@ -229,11 +234,10 @@ DesktopBuddy is built in public, one phase at a time. Ticked items have shipped;
 #### Next up — Feels at home
 > Quick fixes and little touches that make it nicer to live with.
 
-- [ ] Remember where you put it between launches, and bring it back on screen if a monitor is unplugged
-- [ ] Count typing as activity, so it doesn't doze off while you write without touching the mouse
-- [ ] A keyboard shortcut to hide and show it, for screen-sharing and presenting
-- [ ] Floating "z"s when it's asleep
-- [ ] Gravity: drop it in mid-air and it falls to the taskbar, landing with a squash
+- [x] Remember where you put it between launches, and bring it back on screen if a monitor is unplugged
+- [x] Count typing as activity, so it doesn't doze off while you write without touching the mouse
+- [x] A keyboard shortcut to hide and show it (Ctrl+Alt+B), for screen-sharing and presenting
+- [x] Floating "z"s when it's asleep
 - [ ] Edge peeking: push it against the screen edge and it hides half off-screen, peeking out
 - [ ] Belly rubs: hold and stroke it back and forth and it melts with happy eyes
 - [ ] Gets dizzy just watching you whip the cursor around
