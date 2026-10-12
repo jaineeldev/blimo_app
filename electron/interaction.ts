@@ -1,5 +1,6 @@
 import { BrowserWindow, ipcMain, screen, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron'
-import { rememberPosition } from './windowState'
+import { settleAfterDrag, stopSlide } from './peek'
+import { peekSide } from './windowState'
 
 /** Faster than the display, so the buddy stays right under the cursor while carried. */
 const DRAG_MS = 1000 / 120
@@ -66,6 +67,7 @@ export function registerWindowControls() {
     const win = windowOf(event)
     if (!win) return
     stopDrag()
+    stopSlide()
     const start = screen.getCursorScreenPoint()
     const bounds = win.getBounds()
     const grab = { x: start.x - bounds.x, y: start.y - bounds.y }
@@ -97,12 +99,15 @@ export function registerWindowControls() {
     drag = { win, timer }
   })
 
-  // Let go: it stays right where it was dropped, and remembers the spot for next time.
-  ipcMain.on('window:drag-end', (event) => {
+  // Let go: it stays right where it was dropped, or tucks in if it was pushed past a screen edge,
+  // and remembers the spot for next time.
+  ipcMain.on('window:drag-end', (event, body?: BodyRect) => {
     const win = drag?.win ?? windowOf(event)
     stopDrag()
-    if (win) rememberPosition(win)
+    if (win) settleAfterDrag(win, body)
   })
+
+  ipcMain.handle('window:peek', () => peekSide())
 
   ipcMain.on('window:always-on-top', (event, onTop: boolean) => {
     windowOf(event)?.setAlwaysOnTop(onTop)

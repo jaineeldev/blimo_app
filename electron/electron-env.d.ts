@@ -29,6 +29,17 @@ type UpdateNotice =
   | { status: 'ready' | 'downloading' | 'updated'; version: string }
   | { status: 'current' | 'failed' | 'restarting' }
 
+/** The screen edge the buddy is tucked behind, peeking out, after being pushed there. */
+type PeekSide = 'left' | 'right'
+
+/** A box in px, relative to the window's content area. */
+interface BodyRect {
+  left: number
+  top: number
+  right: number
+  bottom: number
+}
+
 // Used in Renderer process, expose in `preload.ts`
 interface Window {
   ipcRenderer: import('electron').IpcRenderer
@@ -54,9 +65,16 @@ interface Window {
     installUpdate(): void
     /** While true, clicks fall through the window to whatever is behind it. */
     setClickThrough(through: boolean): void
-    /** The main process moves the window with the cursor between these two calls. */
+    /**
+     * The main process moves the window with the cursor between these two calls. `body` is where the
+     * buddy was let go, so it can tuck in if it was pushed past a screen edge.
+     */
     dragStart(): void
-    dragEnd(): void
+    dragEnd(body?: BodyRect): void
+    /** Fires when the buddy tucks in behind a screen edge after a drag, or is dropped away from one. */
+    onPeek(callback: (side: PeekSide | null) => void): () => void
+    /** The edge it's tucked behind right now, if any. It stays tucked in between launches. */
+    getPeek(): Promise<PeekSide | null>
     /** Seconds since any keyboard or mouse input on the computer. */
     getIdleSeconds(): Promise<number>
     setAlwaysOnTop(onTop: boolean): void

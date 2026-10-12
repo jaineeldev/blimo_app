@@ -9,6 +9,7 @@ import {
   type Pt,
 } from './geometry'
 import { traitsFor, type TraitFn } from './hash'
+import { secretLook } from '../secretNames'
 
 /** Ten silhouettes, weighted so rounds and pebbles are everyday and the louder shapes stay a find. */
 const SHAPE_WEIGHTS = {
@@ -499,7 +500,16 @@ function colours(t: TraitFn, overrides: LookOverrides): { body: Lab; eye: Lab; h
   return { body, eye, hue, tone: toneName }
 }
 
-export function generateLook(name: string, overrides: LookOverrides = {}): BuddyLook {
+/** Pinned traits laid over a base look. Unset (undefined) pins leave the base showing through. */
+function layered(base: LookOverrides, pinned: LookOverrides): LookOverrides {
+  const set = Object.fromEntries(Object.entries(pinned).filter(([, v]) => v !== undefined)) as LookOverrides
+  return { ...base, ...set, traits: { ...base.traits, ...pinned.traits } }
+}
+
+export function generateLook(name: string, pinned: LookOverrides = {}): BuddyLook {
+  // A secret name can come with a look of its own; anything pinned in the panel still goes on top.
+  const secret = secretLook(name)
+  const overrides = secret ? layered(secret, pinned) : pinned
   const hashed = traitsFor(name)
   const t: TraitFn = (key) => overrides.traits?.[key as PinnableTrait] ?? hashed(key)
   const shape = overrides.shape ?? pick(t('shape'), SHAPE_WEIGHTS)

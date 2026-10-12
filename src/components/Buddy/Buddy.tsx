@@ -31,6 +31,13 @@ const PRESSED = 0.55
 /** Starting speeds for the squish: a bump squashes it, noticing the cursor makes it perk up. */
 const BUMP_KICK = 20
 const PERK_KICK = -6
+/** A belly rub melts it flatter than a press, and slowly, like butter in the sun. */
+const MELTED = 0.85
+const MELT = { type: 'spring', stiffness: 90, damping: 13 } as const
+
+/** Tucked behind a screen edge, it leans out this many degrees to peek around it. */
+const PEEK_LEAN = 10
+const PEEK = { stiffness: 160, damping: 14 }
 
 /** The body trails the eyes a little and overshoots, which reads as the head turning to look. */
 const FOLLOW = { stiffness: 120, damping: 11 }
@@ -65,6 +72,12 @@ interface BuddyProps {
   pressed?: boolean
   /** The cursor is over it: it perks up a little as it arrives. */
   hovered?: boolean
+  /** Getting a belly rub: it melts flat, and springs back up after. */
+  melting?: boolean
+  /** Tucked behind this screen edge, so it leans out to peek around it. */
+  peek?: PeekSide | null
+  /** It has a secret name, so it sparkles now and then. */
+  sparkle?: boolean
 }
 
 export function Buddy({ name, overrides, ...rest }: BuddyProps) {
@@ -94,20 +107,24 @@ function usePose(target: Pose): MotionValue<Pose> {
 
 /**
  * Squash (positive) and stretch (negative). It squashes while pressed and springs back past flat
- * when let go; a bump or the cursor arriving kicks it, keeping whatever wobble is already going.
+ * when let go, and sinks flat while melting; a bump or the cursor arriving kicks it, keeping whatever
+ * wobble is already going.
  */
-function useSquish(bounce: number, pressed: boolean, hovered: boolean): MotionValue<number> {
+function useSquish(bounce: number, pressed: boolean, hovered: boolean, melting: boolean): MotionValue<number> {
   const squish = useMotionValue(0)
-  const seen = useRef({ bounce, pressed, hovered })
+  const seen = useRef({ bounce, pressed, hovered, melting })
 
   useEffect(() => {
     const last = seen.current
-    seen.current = { bounce, pressed, hovered }
-    const kick = (speed: number) => animate(squish, 0, { ...WOBBLE, velocity: squish.getVelocity() + speed })
-    if (pressed !== last.pressed) animate(squish, pressed ? PRESSED : 0, pressed ? PRESS : WOBBLE)
+    seen.current = { bounce, pressed, hovered, melting }
+    // Where it comes to rest: melted flat during a belly rub, round otherwise.
+    const rest = melting ? MELTED : 0
+    const kick = (speed: number) => animate(squish, rest, { ...WOBBLE, velocity: squish.getVelocity() + speed })
+    if (pressed !== last.pressed) animate(squish, pressed ? PRESSED : rest, pressed ? PRESS : WOBBLE)
+    else if (melting !== last.melting) animate(squish, rest, melting ? MELT : WOBBLE)
     else if (bounce !== last.bounce) kick(BUMP_KICK)
     else if (hovered && !last.hovered && !pressed) kick(PERK_KICK)
-  }, [bounce, pressed, hovered, squish])
+  }, [bounce, pressed, hovered, melting, squish])
 
   useEffect(() => () => squish.stop(), [squish])
   return squish
@@ -252,19 +269,87 @@ function Zzz({ look, top }: { look: BuddyLook; top: number }) {
   )
 }
 
+const SPARKLE_COLOUR = toHex(oklch(0.9, 0.1, 95))
+/** A four-pointed star with pinched sides. */
+const STAR = 'M0 -4.2Q0.7 -0.7 4.2 0Q0.7 0.7 0 4.2Q-0.7 0.7 -4.2 0Q-0.7 -0.7 0 -4.2Z'
+/** Where each star of a burst twinkles, around the top of the body, how big, and when. */
+const TWINKLES = [
+  { x: -34, y: 4, size: 1, delay: 0 },
+  { x: 31, y: -3, size: 0.8, delay: 0.22 },
+  { x: 36, y: 22, size: 0.6, delay: 0.44 },
+]
+/** A burst every so often, at a random gap between these, and how long one lasts. */
+const SPARKLE_GAP_MS = [12_000, 24_000] as const
+const SPARKLE_BURST_MS = 1_500
+
+/**
+ * A buddy with a secret name sparkles now and then: a short burst of twinkling stars, starting soon
+ * after it gets the name. Returns the key of the burst showing, or null between bursts.
+ */
+function useSparkleBursts(on: boolean): number | null {
+  const [burst, setBurst] = useState<number | null>(null)
+  useEffect(() => {
+    if (!on) return
+    let next = 0
+    let end = 0
+    let count = 0
+    const go = () => {
+      setBurst(++count)
+      end = window.setTimeout(() => setBurst(null), SPARKLE_BURST_MS)
+      next = window.setTimeout(go, SPARKLE_GAP_MS[0] + Math.random() * (SPARKLE_GAP_MS[1] - SPARKLE_GAP_MS[0]))
+    }
+    next = window.setTimeout(go, 500)
+    return () => {
+      window.clearTimeout(next)
+      window.clearTimeout(end)
+      setBurst(null)
+    }
+  }, [on])
+  return burst
+}
+
+/** One burst of stars twinkling in and out around the buddy. `top` is the top of its body. */
+function Sparkles({ top }: { top: number }) {
+  return (
+    <motion.g fill={SPARKLE_COLOUR} initial={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }}>
+      {TWINKLES.map((s, i) => (
+        <g key={i} transform={`translate(${CX + s.x} ${top + s.y}) scale(${s.size})`}>
+          <path className="b-twinkle" d={STAR} style={{ animationDelay: `${s.delay}s` }} />
+        </g>
+      ))}
+    </motion.g>
+  )
+}
+
 interface FaceProps extends Omit<BuddyProps, 'name' | 'overrides'> {
   name: string
   look: BuddyLook
 }
 
-function Face({ name, look, mood, size = 200, gaze = true, bounce = 0, pressed = false, hovered = false }: FaceProps) {
+function Face({
+  name,
+  look,
+  mood,
+  size = 200,
+  gaze = true,
+  bounce = 0,
+  pressed = false,
+  hovered = false,
+  melting = false,
+  peek = null,
+  sparkle = false,
+}: FaceProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const eyesRef = useRef<SVGGElement>(null)
   const bodyRef = useRef<SVGGElement>(null)
   const expression = EXPRESSIONS[mood]
   const pose = usePose(expression.pose)
-  const squish = useSquish(bounce, pressed, hovered)
+  const squish = useSquish(bounce, pressed, hovered, melting)
   const carry = useCarry()
+  const burst = useSparkleBursts(sparkle)
+  // Leans out from behind the edge it's tucked behind: right from the left edge, left from the right.
+  const peekLean = useSpring(0, PEEK)
+  useEffect(() => peekLean.set(peek === 'left' ? PEEK_LEAN : peek === 'right' ? -PEEK_LEAN : 0), [peek, peekLean])
   const [left, right] = look.eyes
   const reducedMotion = useMemo(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, [])
   const eyesAt = useGaze(svgRef, {
@@ -297,7 +382,7 @@ function Face({ name, look, mood, size = 200, gaze = true, bounce = 0, pressed =
   const eyesY = useTransform(() => settle(eyesAt.y.get() * pose.get().gaze, restY))
   const bodyX = useTransform(() => followX.get() * pose.get().gaze * 0.2)
   const bodyY = useTransform(() => pose.get().bodyY + followY.get() * pose.get().gaze * BODY_RISE)
-  const rotate = useTransform(() => pose.get().bodyTilt + followX.get() * pose.get().gaze * LEAN)
+  const rotate = useTransform(() => pose.get().bodyTilt + followX.get() * pose.get().gaze * LEAN + peekLean.get())
   // Looking up it stretches tall, as if craning its neck; looking down it settles.
   const squishAll = () => squish.get() + carry.squish.get() + followY.get() * pose.get().gaze * CRANE
   const scaleX = useTransform(() => (1 + pose.get().squash) * (1 + 0.12 * squishAll()))
@@ -385,6 +470,7 @@ function Face({ name, look, mood, size = 200, gaze = true, bounce = 0, pressed =
             <AnimatePresence>
               {expression.effect === 'hearts' && <Hearts key="hearts" look={look} />}
               {expression.effect === 'zzz' && <Zzz key="zzz" look={look} top={hangY} />}
+              {burst !== null && <Sparkles key={`sparkle-${burst}`} top={hangY} />}
             </AnimatePresence>
           </motion.svg>
         </div>

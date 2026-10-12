@@ -90,6 +90,8 @@ export function UpdateBubble() {
   useEffect(() => window.buddy?.onUpdateProgress(setPercent), [])
   useHelloAfterUpdate(show)
   const done = useCallback(() => setShown(null), [])
+  // While the ring or a message is up, the buddy's own chatter waits.
+  useEffect(() => useBuddyStore.getState().setUpdateBusy(Boolean(shown) || percent !== null), [shown, percent])
 
   // The ring takes the buddy's colour, unless that's too dark to see on the ring's dark badge.
   const ringColour = useMemo(() => {
@@ -240,7 +242,7 @@ function NoticeBubble({ notice, size, onDone }: { notice: UpdateNotice; size: nu
 
   return (
     <div className="bubble-anchor" style={placement.style}>
-      <SpeechBubble text={text} tail={placement.tail} leaving={leaving} onLeft={onDone}>
+      <SpeechBubble text={text} tail={placement.tail} within={placement.within} leaving={leaving} onLeft={onDone}>
         {extra}
       </SpeechBubble>
     </div>

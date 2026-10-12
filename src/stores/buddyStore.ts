@@ -28,6 +28,12 @@ export interface BuddySettings {
   introStep: string | null
   /** The app version that last ran, so the buddy can tell when it has just been updated. */
   lastVersion: string | null
+  /** When you first met (ms since 1970), for anniversaries. */
+  firstMet: number | null
+  /** Milestones it has already mentioned, so each one is said only once. */
+  milestones: string[]
+  /** Every pet it's ever had, for the pet milestones. */
+  lifetimePets: number
 }
 
 interface BuddyStore extends BuddySettings {
@@ -46,6 +52,14 @@ interface BuddyStore extends BuddySettings {
   /** The version whose what's new card is open, if any. */
   whatsNew: string | null
   screenSpace: ScreenSpace | null
+  /** The screen edge it's tucked behind after being pushed there, if any. */
+  peek: PeekSide | null
+  /** Being stroked back and forth, so it melts. */
+  melting: boolean
+  /** A passing comment it's making, such as when clicked. */
+  chatter: { text: string; id: number } | null
+  /** An update ring or update message is showing, so chatter waits its turn. */
+  updateBusy: boolean
   update: (settings: Partial<BuddySettings>) => void
   setName: (name: string) => void
   setState: (state: BuddyState) => void
@@ -61,6 +75,14 @@ interface BuddyStore extends BuddySettings {
   closePanel: () => void
   openWhatsNew: (version: string) => Promise<void>
   closeWhatsNew: () => void
+  setPeek: (peek: PeekSide | null) => void
+  setMelting: (melting: boolean) => void
+  /** Says `text` in a bubble, replacing any comment already up. */
+  say: (text: string) => void
+  /** Ends the comment with this id, or whatever comment is up when no id is given. */
+  hush: (id?: number) => void
+  setUpdateBusy: (busy: boolean) => void
+  markMilestone: (id: string) => void
 }
 
 export const SIZE_RANGE = { min: 120, max: 280 } as const
@@ -74,6 +96,7 @@ const OLD_DEFAULT_NAME = 'buddy'
 const LOWERCASE_DEFAULT_NAME = 'sora'
 
 let reactionTimer = 0
+let chatterId = 0
 
 /** What the buddy is actually showing: a reaction, else its ambient mood over idle, else its set mood. */
 export function shownMood(s: Pick<BuddyStore, 'reaction' | 'ambient' | 'state'>): BuddyState {
@@ -92,6 +115,9 @@ export const useBuddyStore = create<BuddyStore>()(
       onboarded: false,
       introStep: null,
       lastVersion: null,
+      firstMet: null,
+      milestones: [],
+      lifetimePets: 0,
       state: 'idle',
       reaction: null,
       ambient: null,
@@ -101,6 +127,10 @@ export const useBuddyStore = create<BuddyStore>()(
       panelOpen: false,
       whatsNew: null,
       screenSpace: null,
+      peek: null,
+      melting: false,
+      chatter: null,
+      updateBusy: false,
       update: (settings) => set(settings),
       setName: (name) => set({ name }),
       setState: (state) => set({ state }),
@@ -120,15 +150,22 @@ export const useBuddyStore = create<BuddyStore>()(
       openPanel: async () => {
         // Ask where the screen edges are first, so the panel opens on the right side straight away.
         const screenSpace = (await window.buddy?.getScreenSpace()) ?? null
-        // One card beside the buddy at a time.
-        set({ panelOpen: true, whatsNew: null, screenSpace })
+        // One card beside the buddy at a time, and it stops chattering to let you get on with it.
+        set({ panelOpen: true, whatsNew: null, chatter: null, screenSpace })
       },
       closePanel: () => set({ panelOpen: false }),
       openWhatsNew: async (version) => {
         const screenSpace = (await window.buddy?.getScreenSpace()) ?? null
-        set({ whatsNew: version, panelOpen: false, screenSpace })
+        set({ whatsNew: version, panelOpen: false, chatter: null, screenSpace })
       },
       closeWhatsNew: () => set({ whatsNew: null }),
+      setPeek: (peek) => set({ peek }),
+      setMelting: (melting) => set({ melting }),
+      say: (text) => set({ chatter: { text, id: ++chatterId } }),
+      hush: (id) => set((s) => (id === undefined || s.chatter?.id === id ? { chatter: null } : {})),
+      // Update news always gets the floor.
+      setUpdateBusy: (busy) => set(busy ? { updateBusy: true, chatter: null } : { updateBusy: false }),
+      markMilestone: (id) => set((s) => (s.milestones.includes(id) ? {} : { milestones: [...s.milestones, id] })),
     }),
     {
       name: 'desktop-buddy/settings',
@@ -142,16 +179,20 @@ export const useBuddyStore = create<BuddyStore>()(
         if (version < 3 && settings.name === LOWERCASE_DEFAULT_NAME) settings.name = DEFAULT_NAME
         return settings as BuddyStore
       },
-      partialize: ({ name, look, size, opacity, followCursor, alwaysOnTop, onboarded, introStep, lastVersion }): BuddySettings => ({
-        name,
-        look,
-        size,
-        opacity,
-        followCursor,
-        alwaysOnTop,
-        onboarded,
-        introStep,
-        lastVersion,
+      // Settings saved before a field existed simply pick up its default, so new fields need no migration.
+      partialize: (s): BuddySettings => ({
+        name: s.name,
+        look: s.look,
+        size: s.size,
+        opacity: s.opacity,
+        followCursor: s.followCursor,
+        alwaysOnTop: s.alwaysOnTop,
+        onboarded: s.onboarded,
+        introStep: s.introStep,
+        lastVersion: s.lastVersion,
+        firstMet: s.firstMet,
+        milestones: s.milestones,
+        lifetimePets: s.lifetimePets,
       }),
     },
   ),

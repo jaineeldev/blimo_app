@@ -5,6 +5,17 @@
  */
 export const WHATS_NEW: { version: string; notes: string[] }[] = [
   {
+    version: '1.0.0',
+    notes: [
+      'My first proper release! Thanks for keeping me around while I was brand new.',
+      "Push me past the edge of your screen and I'll tuck in and peek out at you.",
+      'Stroke your cursor back and forth over me for a belly rub and I melt. Whip it around fast and I get dizzy just watching.',
+      'I say hello for the time of day, and now and then I have something to say when you click me.',
+      "On a laptop I can feel the battery: a bit droopy when it's low, perky when you plug in.",
+      'I remember little milestones with you. There are also a few secret names to find.',
+    ],
+  },
+  {
     version: '0.3.0',
     notes: [
       "I remember where you left me now. If a screen disappears, I'll hop back onto one you've still got.",

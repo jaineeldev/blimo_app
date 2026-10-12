@@ -154,6 +154,29 @@
   }
 }
 
+/* A secret name: stars twinkle in, turn and wink out again, one after another. Each burst plays once. */
+.b-twinkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: b-twinkle 0.9s ease-in-out both;
+}
+
+@keyframes b-twinkle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(90deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .b-breathe,
   .b-bob,
@@ -163,7 +186,8 @@
     animation: none;
   }
 
-  .b-heart {
+  .b-heart,
+  .b-twinkle {
     animation: none;
     opacity: 1;
   }

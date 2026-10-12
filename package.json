@@ -1,7 +1,7 @@
 {
   "name": "desktop_buddy",
   "private": true,
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "A tiny creature that lives on your desktop.",
   "author": "Jaineel",
   "type": "module",

@@ -91,8 +91,9 @@ export function startUpdates(win: BrowserWindow): Updates {
     autoUpdater.forceDevUpdateConfig = true
     autoUpdater.updateConfigPath = testConfig
   }
-  // Releases are GitHub pre-releases while the app is in early access.
-  autoUpdater.allowPrerelease = true
+  // Full releases only, now that early access is over. The early-access versions still find these,
+  // because they were set to take pre-releases and full releases alike.
+  autoUpdater.allowPrerelease = false
   autoUpdater.autoDownload = true
   autoUpdater.autoInstallOnAppQuit = true
   // Releases ship the full installer, never the small web one that downloads the rest.

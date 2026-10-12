@@ -24,8 +24,8 @@
     "provider": "github",
     "owner": "jaineeldev",
     "repo": "desktop_buddy",
-    // Early access releases go out as GitHub pre-releases.
-    "releaseType": "prerelease"
+    // Full GitHub releases from v1.0.0 on (early access went out as pre-releases).
+    "releaseType": "release"
   },
   "mac": {
     "target": [

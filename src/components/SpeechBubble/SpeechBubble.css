@@ -30,11 +30,12 @@
   user-select: none;
 }
 
-/* The tail: a small rotated square sharing the bubble's fill and border. */
+/* The tail: a small rotated square sharing the bubble's fill and border. It moves off-centre when the
+   bubble slides over to stay on screen, so it still points at the buddy. */
 .bubble::after {
   content: '';
   position: absolute;
-  left: 50%;
+  left: calc(50% + var(--tail-x, 0px));
   width: 10px;
   height: 10px;
   background: var(--b-bg);

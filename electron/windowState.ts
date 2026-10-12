@@ -7,6 +7,12 @@ const RESCUE_INSET = 150
 
 const stateFile = () => path.join(app.getPath('userData'), 'window-position.json')
 
+/** The screen edge the buddy was left tucked behind, if any. */
+let peeking: PeekSide | null = null
+
+/** The edge the buddy is tucked behind right now, if any. */
+export const peekSide = () => peeking
+
 const middleOf = (b: Rectangle) => ({ x: b.x + b.width / 2, y: b.y + b.height / 2 })
 
 /** Whether the middle of the window, where the buddy sits, is inside one of the screens. */
@@ -18,21 +24,25 @@ function onScreen(bounds: Rectangle): boolean {
 /** Where the buddy was last left, as long as that spot is still on a screen you have. */
 export function savedPosition(size: { width: number; height: number }): { x: number; y: number } | undefined {
   try {
-    const { x, y } = JSON.parse(fs.readFileSync(stateFile(), 'utf8'))
+    const { x, y, peek } = JSON.parse(fs.readFileSync(stateFile(), 'utf8'))
     if (typeof x !== 'number' || typeof y !== 'number') return undefined
-    return onScreen({ x, y, ...size }) ? { x, y } : undefined
+    if (!onScreen({ x, y, ...size })) return undefined
+    // Left peeking from an edge, it's still tucked in there.
+    peeking = peek === 'left' || peek === 'right' ? peek : null
+    return { x, y }
   } catch {
     // No file yet (first launch) or an unreadable one: start in the middle of the screen.
     return undefined
   }
 }
 
-/** Saves where the buddy is now, for next launch. */
-export function rememberPosition(win: BrowserWindow) {
+/** Saves where the buddy is now, and the edge it's tucked behind if it's peeking, for next launch. */
+export function rememberPosition(win: BrowserWindow, peek: PeekSide | null = null) {
   if (win.isDestroyed()) return
+  peeking = peek
   const { x, y } = win.getBounds()
   try {
-    fs.writeFileSync(stateFile(), JSON.stringify({ x, y }))
+    fs.writeFileSync(stateFile(), JSON.stringify({ x, y, peek }))
   } catch {
     // Not worth interrupting anything over; it just starts in the middle next time.
   }
@@ -54,7 +64,9 @@ export function keepOnScreen(win: BrowserWindow) {
     const x = clamp(middle.x, a.x, a.width)
     const y = clamp(middle.y, a.y, a.height)
     win.setBounds({ x: Math.round(x - bounds.width / 2), y: Math.round(y - bounds.height / 2), width: bounds.width, height: bounds.height })
+    // Wherever it lands, it isn't tucked behind an edge any more.
     rememberPosition(win)
+    win.webContents.send('buddy:peek', null)
   }
   screen.on('display-removed', rescue)
   screen.on('display-metrics-changed', rescue)

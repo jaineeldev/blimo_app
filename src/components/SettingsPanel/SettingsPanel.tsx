@@ -19,6 +19,7 @@ import {
 } from '../Buddy/blob/generate'
 import { traitsFor } from '../Buddy/blob/hash'
 import { randomBuddyName } from '../Buddy/names'
+import { secretLook } from '../Buddy/secretNames'
 import { OPACITY_RANGE, SIZE_RANGE, useBuddyStore } from '../../stores/buddyStore'
 import { placePanel } from './placePanel'
 import './SettingsPanel.css'
@@ -91,6 +92,8 @@ export function SettingsPanel() {
 
   const hashed = useMemo(() => traitsFor(name), [name])
   const current = useMemo(() => generateLook(name, look), [name, look])
+  // The colour the name gives when none is pinned (a secret name may bring its own).
+  const fromName = useMemo(() => generateLook(name, { ...look, hue: undefined }), [name, look])
   // Each tile previews this buddy as it would look with that choice.
   const tiles = useMemo(() => {
     const shape = (value?: ShapeName) => ({ value, label: value ?? 'auto', look: generateLook(name, { ...look, shape: value }) })
@@ -192,7 +195,7 @@ export function SettingsPanel() {
               aria-pressed={look.hue === undefined}
               aria-label="Colour from the name"
               title="From the name"
-              style={{ '--auto': toHex(toneColour(current.tone, hashed('hue') * 360)) } as CSSProperties}
+              style={{ '--auto': toHex(toneColour(current.tone, fromName.hue)) } as CSSProperties}
               onClick={() => pick({ hue: undefined })}
             />
             {HUES.map((hue) => (
@@ -231,7 +234,7 @@ export function SettingsPanel() {
               <Slider
                 key={key}
                 label={label}
-                value={flip(pinned ?? hashed(key))}
+                value={flip(pinned ?? secretLook(name)?.traits?.[key] ?? hashed(key))}
                 min={0}
                 max={1}
                 step={0.001}

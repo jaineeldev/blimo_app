@@ -9,6 +9,12 @@ const isHit = (target: EventTarget | null) => target instanceof Element && targe
 /** Solid and part of the buddy itself, rather than the settings panel. */
 const isBuddy = (target: EventTarget | null) => target instanceof Element && target.closest('.buddy [data-hit]') !== null
 
+/** Where the painted buddy is in the window, so the main process can tell if it was pushed past a screen edge. */
+function paintedBuddy(): BodyRect | undefined {
+  const box = document.querySelector('.buddy [data-hit]')?.getBoundingClientRect()
+  return box && { left: box.left, top: box.top, right: box.right, bottom: box.bottom }
+}
+
 interface Options {
   /** A left-click that didn't turn into a drag. */
   onClick: () => void
@@ -94,7 +100,7 @@ export function useDesktopInteraction(options: Options) {
 
   const endDrag = () => {
     delete document.documentElement.dataset.dragging
-    window.buddy?.dragEnd()
+    window.buddy?.dragEnd(paintedBuddy())
     latest.current.onDragEnd?.()
   }
 

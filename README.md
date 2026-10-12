@@ -11,7 +11,7 @@
 
 <p align="center">
   <img alt="Platform: Windows" src="https://img.shields.io/badge/platform-Windows-0078D6">
-  <a href="#early-access"><img alt="Status: early access" src="https://img.shields.io/badge/status-early%20access-f5a623"></a>
+  <a href="https://github.com/jaineeldev/desktop_buddy/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/jaineeldev/desktop_buddy?label=download&color=3fb950"></a>
   <img alt="Built with Electron" src="https://img.shields.io/badge/built%20with-Electron-47848F">
   <img alt="Made with AI assistance" src="https://img.shields.io/badge/made%20with-AI%20assistance-8A63D2">
 </p>
@@ -45,14 +45,20 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 </p>
 
 - Press on it and it squishes under your cursor, then springs back when you let go. Pet it and it's happy, and now and then it winks back. Double-click it and it jumps, startled. Keep petting it and it falls in love.
+- Stroke your cursor back and forth over it for a belly rub and it melts flat with happy eyes. Keep it up and it falls in love.
 - Pick it up and it looks surprised. Carry it around and it swings along behind your cursor, then sways to a stop. Drop it and it squashes as it lands, right where you put it. Shake it while you carry it and it gets dizzy.
-- Move your cursor onto it and it perks up. Hover a moment and it tilts its head, curious.
+- Move your cursor onto it and it perks up. Hover a moment and it tilts its head, curious. Whip your cursor around fast and it gets dizzy just watching.
 - Leave your computer alone and it gets bored after 2 minutes, then dozes off after 5 with little z's floating up. Typing counts as being around, so it won't nod off while you write. It wakes up with a start when you come back.
 - Give it a new look and it pops up, surprised. Start the app and it wakes up with a stretch.
+- Every so often it has something to say in a speech bubble: a passing comment when you click it, a word about a good belly rub, a complaint when you've made it dizzy. It never says the same thing twice in a row.
+- It says hello for the time of day when it starts, and welcome back when you return from a break. Up past midnight? It might suggest bed.
+- On a laptop, it feels the battery: a little drained when it's running low, and perky again when you plug in.
+- It remembers the little things, like your 100th pet, your first belly rub and a week together, and mentions each one once.
+- There are a few secret names to find. Give your buddy one and you'll know.
 
 **Never in the way.** Only the buddy itself catches your mouse. The space around it lets clicks straight through to whatever is underneath. Press **Ctrl+Alt+B** to hide it or bring it back, handy when you're sharing your screen.
 
-**Stays where you put it.** It remembers where you left it between launches, and hops back onto a screen if the one it was on disappears.
+**Stays where you put it.** It remembers where you left it between launches, and hops back onto a screen if the one it was on disappears. Push it past the edge of your screen and it tucks in halfway, leaning out to peek at you. It only does that when you drag it there; it never moves on its own.
 
 **A warm welcome.** The first time you open DesktopBuddy, your new buddy introduces itself in speech bubbles. You name it (its face changes as you type), then try petting it, carrying it and giving it a new look. You can skip it, or replay it any time from the tray.
 
@@ -78,11 +84,11 @@ Right-click your buddy to open the customise panel:
 
 Everything saves automatically, and your buddy is waiting just as you left it next time.
 
-## Early access
+## Download
 
-DesktopBuddy is in early access, for **Windows 10 and 11 only** at the moment. It works, but it's new, so expect the odd rough edge.
+DesktopBuddy is free, for **Windows 10 and 11**.
 
-1. Download the `DesktopBuddy-Windows-…-Setup.exe` file from the newest release on the [releases page](https://github.com/jaineeldev/desktop_buddy/releases).
+1. Download the `DesktopBuddy-Windows-…-Setup.exe` file from the [latest release](https://github.com/jaineeldev/desktop_buddy/releases/latest).
 2. Run it. The installer isn't code-signed yet, so Windows SmartScreen may show "Windows protected your PC". Click **More info**, then **Run anyway**.
 3. Your new buddy wakes up and introduces itself.
 
@@ -94,21 +100,21 @@ You only need to install it once. After that it keeps itself up to date, and you
 
 - It reads where your mouse pointer is, so its eyes can follow it.
 - It checks how long it's been since you last used your keyboard or mouse, so it knows when you're away. It never sees what you type.
-- It saves your buddy's name and settings on your PC.
+- On a laptop, it reads the battery level and whether it's charging.
+- It saves your buddy's name, settings and the milestones it remembers on your PC.
 - It connects to GitHub, and nothing else, to check for new versions. It doesn't collect or send any data about you.
 - It starts with Windows only if you tick that option in the tray.
 - It doesn't use your camera, microphone, location, clipboard or files.
 
 The SmartScreen warning is there because the installer isn't code-signed yet, not because of anything the app does.
 
-Found a bug or have an idea? [Open an issue](https://github.com/jaineeldev/desktop_buddy/issues). Early feedback shapes what comes next.
+Found a bug or have an idea? [Open an issue](https://github.com/jaineeldev/desktop_buddy/issues). Your feedback shapes what comes next.
 
 ## Coming soon
 
-- **More to play with.** It peeks out from the edge of your screen, melts when you give it belly rubs, and gets dizzy just watching you whip the cursor around.
 - **Notices what you're up to.** It bops along to your music, watches videos with you, and steps aside when one goes fullscreen.
 - **Knows your PC.** It reacts to your CPU and memory: stressed when your machine is working hard, sleepy when it's quiet. A small panel beside it shows CPU, RAM and the time.
-- **Personality.** Time-of-day greetings and little comments in speech bubbles.
+- **Personality.** More to say for every mood.
 
 Windows comes first. Linux and macOS may follow later.
 
@@ -184,12 +190,14 @@ desktop_buddy/
 │   ├── cursor.ts            # Feeds the cursor position so the eyes can follow it
 │   ├── interaction.ts       # Click-through, dragging, carry speed, shake detection, always-on-top
 │   ├── windowState.ts       # Remembers where the buddy was left, and keeps it on a screen
+│   ├── peek.ts              # Tucks the buddy in when it's dragged past a screen edge
 │   ├── activity.ts          # Time since any keyboard or mouse input, for boredom and sleep
 │   ├── updater.ts           # Checks GitHub Releases, downloads updates, installs on restart
 │   └── stats-bridge.ts      # (planned) Calls the C addon, exposes via IPC
 ├── src/
 │   ├── components/
 │   │   ├── Buddy/           # Face generator, moods, animation
+│   │   ├── Chatter/         # The buddy's passing comments, and the lines it picks from
 │   │   ├── Onboarding/      # The first-run intro
 │   │   ├── SettingsPanel/   # Right-click customise panel
 │   │   ├── SpeechBubble/    # What the buddy says, and where the bubble goes
@@ -231,25 +239,25 @@ DesktopBuddy is built in public, one phase at a time. Ticked items have shipped;
 - [x] Automatic updates from GitHub Releases, with a download ring and a what's new card
 - [x] A smaller install, and idle breathing that runs on the GPU
 
-#### Next up — Feels at home
+#### ✅ Shipped — v0.3 and v1.0, feels at home
 > Quick fixes and little touches that make it nicer to live with.
 
 - [x] Remember where you put it between launches, and bring it back on screen if a monitor is unplugged
 - [x] Count typing as activity, so it doesn't doze off while you write without touching the mouse
 - [x] A keyboard shortcut to hide and show it (Ctrl+Alt+B), for screen-sharing and presenting
 - [x] Floating "z"s when it's asleep
-- [ ] Edge peeking: push it against the screen edge and it hides half off-screen, peeking out
-- [ ] Belly rubs: hold and stroke it back and forth and it melts with happy eyes
-- [ ] Gets dizzy just watching you whip the cursor around
-- [ ] Click it and now and then it says something in a speech bubble
+- [x] Edge peeking: push it past the screen edge and it tucks in halfway, peeking out
+- [x] Belly rubs: stroke your cursor back and forth over it and it melts with happy eyes
+- [x] Gets dizzy just watching you whip the cursor around
+- [x] Click it and now and then it says something in a speech bubble
 
-#### Then — Notices what you're up to
+#### Next up — Notices what you're up to
 > It reacts to what's happening on your screen, without ever listening to your audio or reading your keys or files.
 
 - [ ] Bops along with floating music notes while music plays, using Windows' media info
 - [ ] Watches videos with you, and steps out of the way during fullscreen videos and games
-- [ ] Battery moods on laptops: sleepy when it's low, perky when it's charging
-- [ ] Time-of-day greetings (morning, afternoon, evening, late night)
+- [x] Battery moods on laptops: drained when it's low, perky when it's plugged in
+- [x] Time-of-day greetings (morning, afternoon, evening, late night), and welcome back after a break
 - [ ] A pool of things to say for each mood, so it never sounds like a recording
 
 #### Then — Knows your PC
@@ -270,7 +278,8 @@ DesktopBuddy is built in public, one phase at a time. Ticked items have shipped;
 - [ ] Focus timer from the tray: a focused face while you work, and a celebration at break time
 - [ ] Gentle reminders, off by default: drink water, stretch, it's late so go to bed
 - [ ] Buddy codes: share your buddy (name and pinned look) as a short code a friend can paste in
-- [ ] Secret names that unlock a rare look or a reaction of their own
+- [x] Secret names that unlock a reaction of their own, and a sparkle
+- [x] Little milestones it remembers and mentions once: pets, belly rubs, anniversaries
 - [ ] A friend for your buddy: two buddies that notice and react to each other
 - [ ] A small landing page on GitHub Pages with the GIFs and a download button
 - [ ] Free code signing (for example through SignPath Foundation) to drop the SmartScreen warning, once the project qualifies
