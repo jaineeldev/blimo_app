@@ -43,7 +43,7 @@
       }
     ],
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}",
-    // The pebble buddy, generated with all the sizes Windows asks for.
+    // Sora, the default buddy, generated with all the sizes Windows asks for (source: brand/icon.svg).
     "icon": "build/icon.ico"
   },
   "nsis": {
