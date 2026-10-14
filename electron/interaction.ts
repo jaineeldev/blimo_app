@@ -44,6 +44,37 @@ function shakeDetector(onShake: () => void) {
   }
 }
 
+/**
+ * How high "always on top" sits. Electron's default level on Windows ('floating') keeps the window just
+ * under the taskbar, tucking it back there every time the buddy is clicked; 'screen-saver' is plain
+ * always-on-top, with nothing tying it to the taskbar.
+ */
+const ON_TOP_LEVEL = 'screen-saver'
+
+/**
+ * How often the buddy climbs back above always-on-top windows that have covered it since: games,
+ * video players, other overlays. Each one that's clicked goes to the top of the pile, over the buddy.
+ */
+const RECLAIM_MS = 1_000
+
+/** Whether you want the buddy above your other windows, from the settings panel. */
+let onTopWanted = true
+
+/** Puts the buddy above every other window, or back among them; with no `onTop`, re-applies what you picked. */
+export function keepOnTop(win: BrowserWindow, onTop = onTopWanted) {
+  onTopWanted = onTop
+  if (!win.isDestroyed()) win.setAlwaysOnTop(onTop, ON_TOP_LEVEL)
+}
+
+/** Above everything from the start, and back on top whenever something covers it, while you want it there. */
+export function stayOnTop(win: BrowserWindow) {
+  keepOnTop(win, true)
+  const timer = setInterval(() => {
+    if (win.isDestroyed()) return clearInterval(timer)
+    if (onTopWanted && win.isVisible() && !win.isMinimized()) keepOnTop(win)
+  }, RECLAIM_MS)
+}
+
 function stopDrag() {
   if (!drag) return
   clearInterval(drag.timer)
@@ -110,8 +141,10 @@ export function registerWindowControls() {
   ipcMain.handle('window:peek', () => peekSide())
 
   ipcMain.on('window:always-on-top', (event, onTop: boolean) => {
-    windowOf(event)?.setAlwaysOnTop(onTop)
+    const win = windowOf(event)
+    if (win) keepOnTop(win, onTop)
   })
+
 
   ipcMain.handle('window:screen-space', (event) => {
     const win = windowOf(event)

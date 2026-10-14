@@ -56,12 +56,14 @@ export function startUpdates(win: BrowserWindow): Updates {
   ipcMain.handle('app:version', () => app.getVersion())
 
   const check = (byHand: boolean) => {
-    if (state.status === 'ready') {
+    // Already found one: say so straight away.
+    if (state.status === 'ready' || state.status === 'downloading') {
       if (byHand) tell(state)
       return
     }
+    // Asking while a background check is under way gets you its answer.
+    if (byHand) asked = true
     if (state.status !== 'idle') return
-    asked = byHand
     // Failures also arrive through the 'error' event, so the rejection needs no handling of its own.
     autoUpdater.checkForUpdates()?.catch(() => {})
   }

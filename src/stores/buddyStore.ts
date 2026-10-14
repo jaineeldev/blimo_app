@@ -22,6 +22,8 @@ export interface BuddySettings {
   opacity: number
   followCursor: boolean
   alwaysOnTop: boolean
+  /** No chatter: greetings, click lines, milestones and the like. Update news still shows. */
+  quiet: boolean
   /** Whether the first-run intro has been finished or skipped. */
   onboarded: boolean
   /** The intro step you'd reached, so a restart picks up there instead of starting over. */
@@ -112,6 +114,7 @@ export const useBuddyStore = create<BuddyStore>()(
       opacity: 1,
       followCursor: true,
       alwaysOnTop: true,
+      quiet: false,
       onboarded: false,
       introStep: null,
       lastVersion: null,
@@ -187,6 +190,7 @@ export const useBuddyStore = create<BuddyStore>()(
         opacity: s.opacity,
         followCursor: s.followCursor,
         alwaysOnTop: s.alwaysOnTop,
+        quiet: s.quiet,
         onboarded: s.onboarded,
         introStep: s.introStep,
         lastVersion: s.lastVersion,

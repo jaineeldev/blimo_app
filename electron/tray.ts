@@ -78,12 +78,39 @@ export function createTray(win: BrowserWindow, updates: Updates) {
       { label: 'Quit', click: () => app.quit() },
     ])
 
-  tray.setToolTip('DesktopBuddy')
-  tray.setContextMenu(menu())
-  updates.onChange(() => {
+  const refresh = () => {
     if (!tray.isDestroyed()) tray.setContextMenu(menu())
-  })
+  }
+  tray.setToolTip('DesktopBuddy')
+  refresh()
+  updates.onChange(refresh)
   tray.on('click', toggle)
+
+  // The settings panel offers the same things, for anyone who never finds the tray icon
+  // (Windows 11 tucks new ones away under the ^ arrow).
+  ipcMain.removeHandler('app:menu-state')
+  ipcMain.handle(
+    'app:menu-state',
+    (): MenuState => ({
+      hideShortcut: shortcut ? shortcut.replace('CommandOrControl', 'Ctrl') : null,
+      startWithWindows: app.isPackaged ? app.getLoginItemSettings().openAtLogin : null,
+      canUpdate: updates.enabled,
+      update: updates.state,
+    }),
+  )
+  ipcMain.removeAllListeners('window:hide')
+  ipcMain.on('window:hide', () => win.hide())
+  ipcMain.removeAllListeners('app:start-with-windows')
+  ipcMain.on('app:start-with-windows', (_event, on: boolean) => {
+    if (!app.isPackaged) return
+    app.setLoginItemSettings({ openAtLogin: on })
+    // So the tick in the tray menu matches.
+    refresh()
+  })
+  ipcMain.removeAllListeners('update:check')
+  ipcMain.on('update:check', () => updates.check())
+  ipcMain.removeAllListeners('app:quit')
+  ipcMain.on('app:quit', () => app.quit())
 
   // The renderer sends the buddy drawn at 1x and 2x, so it stays crisp on high-DPI screens.
   ipcMain.removeAllListeners('tray:set-icon')

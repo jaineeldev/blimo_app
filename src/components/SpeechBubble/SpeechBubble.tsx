@@ -4,6 +4,8 @@ import './SpeechBubble.css'
 
 /** Milliseconds per character while the text types out. */
 export const TYPE_MS = 24
+/** The widest a bubble gets, padding and all. Panels beside the buddy keep clear of this, so they never cover what it says. */
+export const BUBBLE_MAX_WIDTH = 280
 /** Space kept between a bubble and the side of the screen. */
 const EDGE_GAP = 8
 /** The tail stays at least this far in from the bubble's rounded ends. */
@@ -75,7 +77,7 @@ export function SpeechBubble({ text, children, tail = 'down', leaving = false, o
         ref={ref}
         data-hit
         className={`bubble bubble--tail-${tail}`}
-        style={{ '--tail-x': `${place.tail}px` } as CSSProperties}
+        style={{ '--tail-x': `${place.tail}px`, maxWidth: BUBBLE_MAX_WIDTH } as CSSProperties}
         initial={{ opacity: 0, scale: 0.9, y: tail === 'down' ? 6 : -6 }}
         animate={leaving ? { opacity: 0, scale: 0.94, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 420, damping: 30 }}
@@ -85,15 +87,14 @@ export function SpeechBubble({ text, children, tail = 'down', leaving = false, o
       >
         {/* Keyed by the text: a new line remounts the contents with a small lift, while the bubble itself stays put. */}
         <motion.div key={text} initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18 }}>
-          {/* The full text holds the bubble's size while it types, so it doesn't grow letter by letter. */}
+          {/* The rest of the sentence is laid out but hidden while it types, so the bubble is its full size
+              from the start and each centred line sits still as its letters appear. */}
           <p className="bubble-text" aria-live="polite">
-            <span className="bubble-sizer" aria-hidden="true">
-              {text}
+            <span aria-hidden="true">
+              {typed}
+              <span className="bubble-untyped">{text.slice(typed.length)}</span>
             </span>
             {/* Screen readers get the whole sentence once, not a letter at a time. */}
-            <span className="bubble-typed" aria-hidden="true">
-              {typed}
-            </span>
             <span className="sr-only">{text}</span>
           </p>
           {done && children && (

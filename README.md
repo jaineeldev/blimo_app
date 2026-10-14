@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/buddies.gif" alt="Nine different DesktopBuddy creatures breathing and blinking. One falls in love with heart eyes, one winks, one tilts its head, one gets dizzy, and the others turn to look." width="100%">
+  <img src="docs/buddies.gif" alt="Nine different DesktopBuddy creatures breathing and blinking, with Sora, the cyan default buddy, in the middle. Sora falls in love, with heart eyes and floating hearts, then the others take turns to wink, tilt their heads, look surprised, get dizzy and look confused, while the rest turn to look." width="100%">
 </p>
 
 <h1 align="center">DesktopBuddy</h1>
@@ -12,6 +12,7 @@
 <p align="center">
   <img alt="Platform: Windows" src="https://img.shields.io/badge/platform-Windows-0078D6">
   <a href="https://github.com/jaineeldev/desktop_buddy/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/jaineeldev/desktop_buddy?label=download&color=3fb950"></a>
+  <a href="https://jaineel.dev/desktopbuddy"><img alt="Website: jaineel.dev/desktopbuddy" src="https://img.shields.io/badge/website-jaineel.dev%2Fdesktopbuddy-00d5ee"></a>
   <img alt="Built with Electron" src="https://img.shields.io/badge/built%20with-Electron-47848F">
   <img alt="Made with AI assistance" src="https://img.shields.io/badge/made%20with-AI%20assistance-8A63D2">
 </p>
@@ -25,7 +26,7 @@ Give it a name and it grows a face. The name decides everything: its shape, its 
 Then it just lives there. It sits on top of your windows, keeps an eye on your cursor wherever it goes, and has opinions about its day. Maybe one day it'll even answer back when you type to it.
 
 <p align="center">
-  <img src="docs/moods.gif" alt="The default buddy in all fifteen moods, each one breathing and blinking: idle, happy, sleepy, stressed, angry, bored, surprised, sad, curious, confused, love, wink, focused, smug and dizzy" width="720">
+  <img src="docs/moods.gif" alt="Sora, the default buddy, in all fifteen moods, each one breathing and blinking: idle, happy, sleepy, stressed, angry, bored, surprised, sad, curious, confused, love, wink, focused, smug and dizzy" width="720">
 </p>
 
 ## What it can do
@@ -41,46 +42,42 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 **It reacts to you.**
 
 <p align="center">
-  <img src="docs/reactions.gif" alt="A cursor pets the buddy and it squishes and smiles, double-clicks it and it jumps, pets it a lot and it gets heart eyes, picks it up by the head so it swings along behind, then shakes it about until it's dizzy" width="400">
+  <img src="docs/reactions.gif" alt="A cursor pets Sora and it squishes and smiles. Strokes back and forth give it a belly rub, so it melts, says &quot;Belly rubs? Where have these been all my life?&quot; and gets heart eyes. Then it's picked up by the head and swings along behind the cursor, gets shaken until it's dizzy, and squashes as it's put down." width="420">
 </p>
 
-- Press on it and it squishes under your cursor, then springs back when you let go. Pet it and it's happy, and now and then it winks back. Double-click it and it jumps, startled. Keep petting it and it falls in love.
-- Stroke your cursor back and forth over it for a belly rub and it melts flat with happy eyes. Keep it up and it falls in love.
-- Pick it up and it looks surprised. Carry it around and it swings along behind your cursor, then sways to a stop. Drop it and it squashes as it lands, right where you put it. Shake it while you carry it and it gets dizzy.
-- Move your cursor onto it and it perks up. Hover a moment and it tilts its head, curious. Whip your cursor around fast and it gets dizzy just watching.
-- Leave your computer alone and it gets bored after 2 minutes, then dozes off after 5 with little z's floating up. Typing counts as being around, so it won't nod off while you write. It wakes up with a start when you come back.
-- Give it a new look and it pops up, surprised. Start the app and it wakes up with a stretch.
-- Every so often it has something to say in a speech bubble: a passing comment when you click it, a word about a good belly rub, a complaint when you've made it dizzy. It never says the same thing twice in a row.
-- It says hello for the time of day when it starts, and welcome back when you return from a break. Up past midnight? It might suggest bed.
-- On a laptop, it feels the battery: a little drained when it's running low, and perky again when you plug in.
-- It remembers the little things, like your 100th pet, your first belly rub and a week together, and mentions each one once.
-- There are a few secret names to find. Give your buddy one and you'll know.
+- **Pet it.** It squishes under your cursor and springs back, happy, and now and then it winks. Double-click and it jumps. Keep petting and it falls in love. Stroke your cursor back and forth over it for a belly rub and it melts flat.
+- **Pick it up.** It looks surprised, swings along behind your cursor and squashes as it lands, right where you put it. Shake it and it gets dizzy. Whip your cursor around fast and it gets dizzy just watching.
+- **It notices your day.** It perks up when your cursor arrives, gets bored after 2 minutes alone and dozes off after 5, with little z's floating up. Typing counts as being around. It says hello for the time of day, welcome back after a break, and might suggest bed after midnight. On a laptop it feels the battery: drained when it's low, perky when you plug in.
+- **It talks.** Every so often it says something in a speech bubble: a comment when you click it, a word about a good belly rub, a complaint when you've made it dizzy. It never says the same thing twice in a row, remembers little milestones like your 100th pet and a week together, and there are a few secret names to find. Prefer it quiet? Turn on quiet mode.
 
-**Never in the way.** Only the buddy itself catches your mouse. The space around it lets clicks straight through to whatever is underneath. Press **Ctrl+Alt+B** to hide it or bring it back, handy when you're sharing your screen.
+**Always on top, never in the way.** It stays above your other windows, full-screen videos and most games included, and follows you to every virtual desktop. (A game in exclusive full-screen mode draws over everything, so set it to borderless or windowed to keep your buddy in view.) Only the buddy itself catches your mouse. The space around it lets clicks straight through to whatever is underneath. Press **Ctrl+Alt+B** to hide it or bring it back, handy when you're sharing your screen.
 
 **Stays where you put it.** It remembers where you left it between launches, and hops back onto a screen if the one it was on disappears. Push it past the edge of your screen and it tucks in halfway, leaning out to peek at you. It only does that when you drag it there; it never moves on its own.
+
+<p align="center">
+  <img src="docs/peek.gif" alt="Sora is dragged past the right edge of a screen and let go. It slides in to sit half hidden behind the edge, leans out with a wink, says &quot;Peekaboo!&quot; and follows the cursor with its eyes, then gets pulled back out." width="400">
+</p>
 
 **A warm welcome.** The first time you open DesktopBuddy, your new buddy introduces itself in speech bubbles. You name it (its face changes as you type), then try petting it, carrying it and giving it a new look. You can skip it, or replay it any time from the tray.
 
 **Lives in your tray.** The tray icon is your own buddy, and it changes whenever your buddy does.
 
-**Keeps itself up to date.** New versions download in the background, with a little progress ring floating over your buddy's head, and it tells you in a speech bubble when one is ready. Restart it there and then, or it updates the next time it closes. Either way, it pops back up on the new version, tells you so, and can show you what's new. You can see what's new any time from the tray.
+**Keeps itself up to date.** New versions download in the background, with a little progress ring floating over your buddy's head, and it tells you in a speech bubble when one is ready. Restart it there and then, or it updates the next time it closes. Either way, it pops back up on the new version, tells you so, and can show you what's new. Want to check right now? Press **Check for updates** at the bottom of the panel.
 
 ## Make it yours
 
 <p align="center">
-  <img src="docs/customise.gif" alt="One buddy squishing and popping into a new look again and again: new shapes, new eyes and new colours" width="280">
+  <img src="docs/customise.gif" alt="The settings panel beside Sora. Sora is renamed Pip and its face changes with every letter, then it gets the kitty shape, a pink pastel colour and square eyes. Typing Sora back and pressing unpin all brings the original back, and the panel closes." width="420">
 </p>
 
-Right-click your buddy to open the customise panel:
+Right-click your buddy to open its panel:
 
-- Rename it, or roll a random name.
+- Rename it (its face changes as you type), or roll a random name.
 - Pick a body shape, including six hand-drawn extras: mochi, bean, ghost, kitty, sprout and slime.
-- Choose its eyes: dots, domes, squares, capsules or visor.
-- Fine-tune those eyes: size, width, spacing, squareness, tilt, height and how far left or right they sit.
-- Set its colour and tone.
-- Change its size and opacity.
-- Turn cursor-following and always-on-top on or off.
+- Choose its eyes (dots, domes, squares, capsules or visor) and fine-tune them: size, width, spacing, squareness, tilt, height and how far left or right they sit.
+- Set its colour and tone, its size and its opacity.
+- Turn cursor-following, always-on-top, start with Windows and quiet mode on or off. Quiet mode stops the chatter, but your buddy still tells you about updates.
+- Check for updates, hide it or quit it, from the buttons at the bottom.
 
 Everything saves automatically, and your buddy is waiting just as you left it next time.
 
@@ -88,11 +85,13 @@ Everything saves automatically, and your buddy is waiting just as you left it ne
 
 DesktopBuddy is free, for **Windows 10 and 11**.
 
-1. Download the `DesktopBuddy-Windows-…-Setup.exe` file from the [latest release](https://github.com/jaineeldev/desktop_buddy/releases/latest).
+1. Download it from [jaineel.dev/desktopbuddy](https://jaineel.dev/desktopbuddy), or grab the `DesktopBuddy-Windows-…-Setup.exe` file from the [latest release](https://github.com/jaineeldev/desktop_buddy/releases/latest).
 2. Run it. The installer isn't code-signed yet, so Windows SmartScreen may show "Windows protected your PC". Click **More info**, then **Run anyway**.
 3. Your new buddy wakes up and introduces itself.
 
-Want it there every time you log in? Right-click the DesktopBuddy icon in your system tray and tick **Start with Windows**.
+To close it, right-click your buddy and press **Quit DesktopBuddy** at the bottom of the panel, or right-click the tray icon and choose **Quit**.
+
+Want it there every time you log in? Right-click your buddy and turn on **start with Windows**, or tick **Start with Windows** in the tray menu.
 
 You only need to install it once. After that it keeps itself up to date, and your buddy tells you when a new version is ready. The one exception: if you installed the very first version (v0.1.0), download the newest one by hand once, because that version can't update itself.
 
@@ -103,7 +102,7 @@ You only need to install it once. After that it keeps itself up to date, and you
 - On a laptop, it reads the battery level and whether it's charging.
 - It saves your buddy's name, settings and the milestones it remembers on your PC.
 - It connects to GitHub, and nothing else, to check for new versions. It doesn't collect or send any data about you.
-- It starts with Windows only if you tick that option in the tray.
+- It starts with Windows only if you turn that option on.
 - It doesn't use your camera, microphone, location, clipboard or files.
 
 The SmartScreen warning is there because the installer isn't code-signed yet, not because of anything the app does.
@@ -112,7 +111,7 @@ Found a bug or have an idea? [Open an issue](https://github.com/jaineeldev/deskt
 
 ## Coming soon
 
-- **Notices what you're up to.** It bops along to your music, watches videos with you, and steps aside when one goes fullscreen.
+- **Notices what you're up to.** It bops along to your music and watches videos with you, with an option to step aside during full-screen videos and games.
 - **Knows your PC.** It reacts to your CPU and memory: stressed when your machine is working hard, sleepy when it's quiet. A small panel beside it shows CPU, RAM and the time.
 - **Personality.** More to say for every mood.
 
@@ -251,11 +250,19 @@ DesktopBuddy is built in public, one phase at a time. Ticked items have shipped;
 - [x] Gets dizzy just watching you whip the cursor around
 - [x] Click it and now and then it says something in a speech bubble
 
+#### ✅ Shipped — v1.0.1, fixes from your feedback
+> Thanks to everyone who reported these.
+
+- [x] Always on top for real: it climbs back above games, video players and other always-on-top windows, survives Show desktop, and follows you to every virtual desktop
+- [x] Quit, hide and check for updates right from the panel, no hunting for the tray icon
+- [x] Start with Windows and a quiet mode in the panel
+- [x] The panel keeps clear of anything your buddy is saying, and speech bubbles are centred
+
 #### Next up — Notices what you're up to
 > It reacts to what's happening on your screen, without ever listening to your audio or reading your keys or files.
 
 - [ ] Bops along with floating music notes while music plays, using Windows' media info
-- [ ] Watches videos with you, and steps out of the way during fullscreen videos and games
+- [ ] Watches videos with you, with an option to step aside during full-screen videos and games
 - [x] Battery moods on laptops: drained when it's low, perky when it's plugged in
 - [x] Time-of-day greetings (morning, afternoon, evening, late night), and welcome back after a break
 - [ ] A pool of things to say for each mood, so it never sounds like a recording
@@ -281,7 +288,7 @@ DesktopBuddy is built in public, one phase at a time. Ticked items have shipped;
 - [x] Secret names that unlock a reaction of their own, and a sparkle
 - [x] Little milestones it remembers and mentions once: pets, belly rubs, anniversaries
 - [ ] A friend for your buddy: two buddies that notice and react to each other
-- [ ] A small landing page on GitHub Pages with the GIFs and a download button
+- [x] A landing page with the GIFs and a download button, at [jaineel.dev/desktopbuddy](https://jaineel.dev/desktopbuddy)
 - [ ] Free code signing (for example through SignPath Foundation) to drop the SmartScreen warning, once the project qualifies
 
 #### Possible Future — AI Chat

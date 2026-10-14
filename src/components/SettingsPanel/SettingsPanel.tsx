@@ -22,6 +22,7 @@ import { randomBuddyName } from '../Buddy/names'
 import { secretLook } from '../Buddy/secretNames'
 import { OPACITY_RANGE, SIZE_RANGE, useBuddyStore } from '../../stores/buddyStore'
 import { placePanel } from './placePanel'
+import { UpdateButton } from './UpdateButton'
 import './SettingsPanel.css'
 
 const PANEL_WIDTH = 288
@@ -62,7 +63,7 @@ function countPins(look: LookOverrides): number {
 }
 
 export function SettingsPanel() {
-  const { name, look, size, opacity, followCursor, alwaysOnTop, state, screenSpace } = useBuddyStore(
+  const { name, look, size, opacity, followCursor, alwaysOnTop, quiet, state, screenSpace } = useBuddyStore(
     useShallow((s) => ({
       name: s.name,
       look: s.look,
@@ -70,11 +71,24 @@ export function SettingsPanel() {
       opacity: s.opacity,
       followCursor: s.followCursor,
       alwaysOnTop: s.alwaysOnTop,
+      quiet: s.quiet,
       state: s.state,
       screenSpace: s.screenSpace,
     })),
   )
   const { update, setName, setState, closePanel, celebrate } = useBuddyStore.getState()
+
+  // What the tray menu knows (the hide shortcut, start with Windows, updates), so the panel can offer the same.
+  const [menu, setMenu] = useState<MenuState | null>(null)
+  const [version, setVersion] = useState<string | null>(null)
+  useEffect(() => {
+    let open = true
+    void window.buddy?.getMenuState().then((state) => open && setMenu(state))
+    void window.buddy?.getVersion().then((v) => open && setVersion(v))
+    return () => {
+      open = false
+    }
+  }, [])
 
   // Read the latest look from the store, not this render's copy, so quick successive edits never undo each other.
   const setLook = (patch: LookOverrides) => update({ look: compact({ ...useBuddyStore.getState().look, ...patch }) })
@@ -282,8 +296,41 @@ export function SettingsPanel() {
         <Section title="behaviour">
           <Toggle label="eyes follow cursor" checked={followCursor} onChange={(v) => update({ followCursor: v })} />
           <Toggle label="always on top" checked={alwaysOnTop} onChange={(v) => update({ alwaysOnTop: v })} />
+          {menu && menu.startWithWindows !== null && (
+            <Toggle
+              label="start with Windows"
+              checked={menu.startWithWindows}
+              onChange={(v) => {
+                window.buddy?.setStartWithWindows(v)
+                setMenu({ ...menu, startWithWindows: v })
+              }}
+            />
+          )}
+          <Toggle label="quiet mode" checked={quiet} onChange={(v) => update({ quiet: v })} />
+          <p className="hint">Quiet mode stops the chatter. Update news still shows.</p>
         </Section>
       </div>
+
+      {/* Outside the scrolling body, so it's always in reach without hunting for the tray icon. */}
+      {window.buddy && (
+        <footer className="panel-foot">
+          {menu && <UpdateButton menu={menu} />}
+          <button
+            className="foot-btn"
+            onClick={() => {
+              closePanel()
+              window.buddy?.hide()
+            }}
+          >
+            <HideIcon /> Hide
+            {menu?.hideShortcut && <span className="foot-key">{menu.hideShortcut}</span>}
+          </button>
+          <button className="foot-btn" onClick={() => window.buddy?.quit()}>
+            <PowerIcon /> Quit DesktopBuddy
+          </button>
+          <p className="panel-about">{version && `DesktopBuddy v${version}`}</p>
+        </footer>
+      )}
     </motion.div>
   )
 }
@@ -419,6 +466,25 @@ function CloseIcon() {
   return (
     <svg {...iconProps}>
       <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  )
+}
+
+function HideIcon() {
+  return (
+    <svg {...iconProps} width={13} height={13}>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M4 20 20 4" />
+    </svg>
+  )
+}
+
+function PowerIcon() {
+  return (
+    <svg {...iconProps} width={13} height={13}>
+      <path d="M12 3v8" />
+      <path d="M6.3 7.5a8 8 0 1 0 11.4 0" />
     </svg>
   )
 }

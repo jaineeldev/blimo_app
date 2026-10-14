@@ -15,9 +15,11 @@
   --b-faint: #5f5f67;
   --b-focus: #9db8ff;
 
+  /* Its max-width is BUBBLE_MAX_WIDTH in SpeechBubble.tsx, which panels keep clear of; border-box so
+     that's the whole bubble. */
   position: relative;
+  box-sizing: border-box;
   width: max-content;
-  max-width: 250px;
   padding: 12px 14px;
   background: var(--b-bg);
   border: 1px solid var(--b-line);
@@ -57,17 +59,11 @@
 }
 
 .bubble-text {
-  display: grid;
   margin: 0;
+  text-align: center;
 }
 
-/* The invisible full text and the typed text share one grid cell, so the bubble is sized by the full sentence. */
-.bubble-sizer,
-.bubble-typed {
-  grid-area: 1 / 1;
-}
-
-.bubble-sizer {
+.bubble-untyped {
   visibility: hidden;
 }
 
@@ -89,9 +85,11 @@
   outline-offset: 2px;
 }
 
+/* Centred under the text; a "skip" link's auto margin still pushes it out to the right. */
 .bubble-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 }
 

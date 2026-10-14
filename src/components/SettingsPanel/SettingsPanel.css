@@ -114,6 +114,67 @@
   color: var(--p-text);
 }
 
+/* Footer, pinned under the scrolling body */
+
+.panel-foot {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--p-line);
+}
+
+/* Proper buttons, full width, so they read as actions rather than notes. */
+.panel .foot-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 0;
+  border: 1px solid var(--p-edge);
+  border-radius: 10px;
+  color: var(--p-text);
+  font-size: 12px;
+}
+
+.panel .foot-btn:not(:disabled, [aria-disabled]):hover {
+  background: var(--p-surface-hi);
+}
+
+/* Telling you where an update is up to, rather than offering something to press. */
+.panel .foot-btn[aria-disabled] {
+  color: var(--p-muted);
+  cursor: default;
+}
+
+.foot-btn .spin {
+  animation: foot-spin 0.9s linear infinite;
+}
+
+@keyframes foot-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foot-btn .spin {
+    animation: none;
+  }
+}
+
+.foot-key {
+  margin-left: 3px;
+  color: var(--p-faint);
+  font-size: 11px;
+}
+
+.panel-about {
+  margin: 0;
+  padding: 2px 2px 0;
+  color: var(--p-faint);
+  font-size: 11px;
+}
+
 /* Scrolling body and sections */
 
 .panel-body {

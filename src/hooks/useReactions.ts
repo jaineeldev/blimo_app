@@ -119,11 +119,12 @@ export function useReactions() {
 
     /**
      * Says a line, as long as nothing else has the floor: not during the intro, an update message or
-     * the what's new card, and not over the customise panel unless `overPanel`.
+     * the what's new card, and not over the customise panel unless `overPanel`. Never in quiet mode;
+     * a milestone then waits until it's switched off.
      */
     const speak = (text: string, overPanel = false) => {
-      const { onboarded, panelOpen, whatsNew, updateBusy, chatter, say } = store()
-      if (!onboarded || (panelOpen && !overPanel) || whatsNew || updateBusy || chatter) return false
+      const { quiet, onboarded, panelOpen, whatsNew, updateBusy, chatter, say } = store()
+      if (quiet || !onboarded || (panelOpen && !overPanel) || whatsNew || updateBusy || chatter) return false
       s.lastChat = Date.now()
       say(text)
       return true

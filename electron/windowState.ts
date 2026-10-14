@@ -4,6 +4,8 @@ import path from 'node:path'
 
 /** How far the buddy's middle stays inside a screen's edges when it has to be brought back. */
 const RESCUE_INSET = 150
+/** The window's size before saved positions recorded it (up to v1.0.0). */
+const OLD_SIZE = { width: 860, height: 620 }
 
 const stateFile = () => path.join(app.getPath('userData'), 'window-position.json')
 
@@ -24,8 +26,13 @@ function onScreen(bounds: Rectangle): boolean {
 /** Where the buddy was last left, as long as that spot is still on a screen you have. */
 export function savedPosition(size: { width: number; height: number }): { x: number; y: number } | undefined {
   try {
-    const { x, y, peek } = JSON.parse(fs.readFileSync(stateFile(), 'utf8'))
-    if (typeof x !== 'number' || typeof y !== 'number') return undefined
+    const saved = JSON.parse(fs.readFileSync(stateFile(), 'utf8'))
+    if (typeof saved.x !== 'number' || typeof saved.y !== 'number') return undefined
+    // If the window has changed size since, the buddy (in its middle) still lands exactly where it was.
+    const was = typeof saved.width === 'number' && typeof saved.height === 'number' ? saved : OLD_SIZE
+    const x = Math.round(saved.x + (was.width - size.width) / 2)
+    const y = Math.round(saved.y + (was.height - size.height) / 2)
+    const { peek } = saved
     if (!onScreen({ x, y, ...size })) return undefined
     // Left peeking from an edge, it's still tucked in there.
     peeking = peek === 'left' || peek === 'right' ? peek : null
@@ -40,9 +47,9 @@ export function savedPosition(size: { width: number; height: number }): { x: num
 export function rememberPosition(win: BrowserWindow, peek: PeekSide | null = null) {
   if (win.isDestroyed()) return
   peeking = peek
-  const { x, y } = win.getBounds()
+  const { x, y, width, height } = win.getBounds()
   try {
-    fs.writeFileSync(stateFile(), JSON.stringify({ x, y, peek }))
+    fs.writeFileSync(stateFile(), JSON.stringify({ x, y, width, height, peek }))
   } catch {
     // Not worth interrupting anything over; it just starts in the middle next time.
   }

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { createTray } from './tray'
 import { startCursorFeed } from './cursor'
-import { registerWindowControls } from './interaction'
+import { registerWindowControls, stayOnTop } from './interaction'
 import { registerActivity } from './activity'
 import { startUpdates } from './updater'
 import { keepOnScreen, savedPosition } from './windowState'
@@ -30,7 +30,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 
 let win: BrowserWindow | null
 
-/** Matches `appId` in electron-builder.json5, so Windows treats the installed app and its taskbar button as one. */
+/** Matches `appId` in electron-builder.json5, so Windows treats the running app and its Start menu shortcut as one. */
 const APP_ID = 'com.jaineel.desktopbuddy'
 if (process.platform === 'win32') app.setAppUserModelId(APP_ID)
 
@@ -46,8 +46,11 @@ if (!isFirstInstance) {
   })
 }
 
-/** Room for the buddy in the middle and the settings panel on either side. Empty space is click-through, so the extra size never gets in the way. */
-const WINDOW_SIZE = { width: 860, height: 620 }
+/**
+ * Room for the buddy in the middle and the settings panel on either side, clear of a speech bubble
+ * over the buddy. Empty space is click-through, so the extra size never gets in the way.
+ */
+const WINDOW_SIZE = { width: 920, height: 620 }
 
 function createWindow() {
   win = new BrowserWindow({
@@ -58,13 +61,24 @@ function createWindow() {
     ...savedPosition(WINDOW_SIZE),
     resizable: false,
     transparent: true,
-    alwaysOnTop: true,
+    // A tool window, like a desktop widget: no taskbar button to minimise it by accident, out of Alt+Tab,
+    // still there after Show desktop (Win+D), and on every virtual desktop rather than just the first.
+    type: 'toolbar',
+    minimizable: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
       // The only text box is the buddy's name, which wouldn't be in a dictionary anyway.
       spellcheck: false,
     },
   })
+
+  // Not the constructor's `alwaysOnTop`, which uses the level that tucks it under the taskbar.
+  // The renderer then applies your own setting.
+  stayOnTop(win)
+
+  // With no taskbar button there would be no way to get it back, so it never stays minimised
+  // (by "minimise all", say).
+  win.on('minimize', () => win?.restore())
 
   // Clicks pass through until the renderer sees the cursor over the buddy or the panel.
   win.setIgnoreMouseEvents(true, { forward: true })

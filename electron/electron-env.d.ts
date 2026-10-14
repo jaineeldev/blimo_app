@@ -32,6 +32,18 @@ type UpdateNotice =
 /** The screen edge the buddy is tucked behind, peeking out, after being pushed there. */
 type PeekSide = 'left' | 'right'
 
+/** What the settings panel needs to offer the same things as the tray menu. */
+interface MenuState {
+  /** How the hide shortcut reads ("Ctrl+Alt+B"), or null if another app already has it. */
+  hideShortcut: string | null
+  /** Whether it starts with Windows, or null where that can't be set (a dev copy). */
+  startWithWindows: boolean | null
+  /** Whether this copy can update itself, which only the installed app can. */
+  canUpdate: boolean
+  /** Where updating is up to right now, such as partway through a download. */
+  update: import('./updater').UpdateState
+}
+
 /** A box in px, relative to the window's content area. */
 interface BodyRect {
   left: number
@@ -81,5 +93,13 @@ interface Window {
     getScreenSpace(): Promise<import('../src/stores/buddyStore').ScreenSpace>
     /** Your buddy drawn at 16px and 32px as PNG data URLs, plus the tray tooltip. */
     setTrayIcon(icon: { x1: string; x2: string; tooltip: string }): void
+    getMenuState(): Promise<MenuState>
+    /** Hides the buddy, like Hide in the tray menu; the shortcut or the tray brings it back. */
+    hide(): void
+    setStartWithWindows(on: boolean): void
+    /** Checks for a new version now; the answer arrives through `onUpdate`. */
+    checkForUpdates(): void
+    /** Closes DesktopBuddy completely, like Quit in the tray menu. */
+    quit(): void
   }
 }

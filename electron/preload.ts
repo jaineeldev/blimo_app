@@ -53,4 +53,9 @@ contextBridge.exposeInMainWorld('buddy', {
   setAlwaysOnTop: (onTop: boolean) => ipcRenderer.send('window:always-on-top', onTop),
   getScreenSpace: () => ipcRenderer.invoke('window:screen-space'),
   setTrayIcon: (icon: { x1: string; x2: string; tooltip: string }) => ipcRenderer.send('tray:set-icon', icon),
+  getMenuState: () => ipcRenderer.invoke('app:menu-state'),
+  hide: () => ipcRenderer.send('window:hide'),
+  setStartWithWindows: (on: boolean) => ipcRenderer.send('app:start-with-windows', on),
+  checkForUpdates: () => ipcRenderer.send('update:check'),
+  quit: () => ipcRenderer.send('app:quit'),
 })
