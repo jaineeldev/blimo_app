@@ -5,6 +5,16 @@
  */
 export const WHATS_NEW: { version: string; notes: string[] }[] = [
   {
+    version: '1.0.1',
+    notes: [
+      "I stay on top properly now: over games and videos, through Show desktop, and on every virtual desktop you've got.",
+      'Right-click me for new buttons at the bottom: check for updates, hide me, or quit.',
+      "You can set me to start with Windows from there too, and there's a quiet mode if you'd like me to keep my thoughts to myself.",
+      "My panel doesn't cover what I'm saying any more, and my speech bubbles are centred.",
+      'I have a new app icon. Look familiar?',
+    ],
+  },
+  {
     version: '1.0.0',
     notes: [
       'My first proper release! Thanks for keeping me around while I was brand new.',
