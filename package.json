@@ -4,6 +4,7 @@
   "version": "1.0.1",
   "description": "A tiny creature that lives on your desktop.",
   "author": "Jaineel",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
