@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/dark/buddies.gif">
-    <img src="docs/light/buddies.gif" alt="Nine different DesktopBuddy creatures breathing and blinking, with Sora, the cyan default buddy, in the middle. Sora falls in love, with heart eyes and floating hearts, then the others take turns to wink, tilt their heads, look surprised, get dizzy and look confused, while the rest turn to look." width="100%">
-  </picture>
+  <img src="docs/buddies.gif" alt="Nine different DesktopBuddy creatures breathing and blinking, with Sora, the cyan default buddy, in the middle. Sora falls in love, with heart eyes and floating hearts, then the others take turns to wink, tilt their heads, look surprised, get dizzy and look confused, while the rest turn to look." width="100%">
 </p>
 
 <h1 align="center">DesktopBuddy</h1>
@@ -30,10 +27,7 @@ Give it a name and it grows a face. The name decides everything: its shape, its 
 Then it just lives there. It sits on top of your windows, keeps an eye on your cursor wherever it goes, and has opinions about its day. Maybe one day it'll even answer back when you type to it.
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/dark/moods.gif">
-    <img src="docs/light/moods.gif" alt="Sora, the default buddy, in all fifteen moods, each one breathing and blinking: idle, happy, sleepy, stressed, angry, bored, surprised, sad, curious, confused, love, wink, focused, smug and dizzy" width="720">
-  </picture>
+  <img src="docs/moods.gif" alt="Sora, the default buddy, in all fifteen moods, each one breathing and blinking: idle, happy, sleepy, stressed, angry, bored, surprised, sad, curious, confused, love, wink, focused, smug and dizzy" width="720">
 </p>
 
 ## What it can do
@@ -49,10 +43,7 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 **It reacts to you.**
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/dark/reactions.gif">
-    <img src="docs/light/reactions.gif" alt="A cursor pets Sora and it squishes and smiles. Strokes back and forth give it a belly rub, so it melts, says &quot;Belly rubs? Where have these been all my life?&quot; and gets heart eyes. Then it's picked up by the head and swings along behind the cursor, gets shaken until it's dizzy, and squashes as it's put down." width="420">
-  </picture>
+  <img src="docs/reactions.gif" alt="A cursor pets Sora and it squishes and smiles. Strokes back and forth give it a belly rub, so it melts, says &quot;Belly rubs? Where have these been all my life?&quot; and gets heart eyes. Then it's picked up by the head and swings along behind the cursor, gets shaken until it's dizzy, and squashes as it's put down." width="420">
 </p>
 
 - **Pet it.** It squishes under your cursor and springs back, happy, and now and then it winks. Double-click and it jumps. Keep petting and it falls in love. Stroke your cursor back and forth over it for a belly rub and it melts flat.
@@ -65,10 +56,7 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 **Stays where you put it.** It remembers where you left it between launches, and hops back onto a screen if the one it was on disappears. Push it past the edge of your screen and it tucks in halfway, leaning out to peek at you. It only does that when you drag it there; it never moves on its own.
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/dark/peek.gif">
-    <img src="docs/light/peek.gif" alt="Sora is dragged past the right edge of a screen and let go. It slides in to sit half hidden behind the edge, leans out with a wink, says &quot;Peekaboo!&quot; and follows the cursor with its eyes, then gets pulled back out." width="400">
-  </picture>
+  <img src="docs/peek.gif" alt="Sora is dragged past the right edge of a screen and let go. It slides in to sit half hidden behind the edge, leans out with a wink, says &quot;Peekaboo!&quot; and follows the cursor with its eyes, then gets pulled back out." width="400">
 </p>
 
 **A warm welcome.** The first time you open DesktopBuddy, your new buddy introduces itself in speech bubbles. You name it (its face changes as you type), then try petting it, carrying it and giving it a new look. You can skip it, or replay it any time from the tray.
@@ -80,10 +68,7 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 ## Make it yours
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/dark/customise.gif">
-    <img src="docs/light/customise.gif" alt="The settings panel beside Sora. Sora is renamed Pip and its face changes with every letter, then it gets the kitty shape, a pink pastel colour and square eyes. Typing Sora back and pressing unpin all brings the original back, and the panel closes." width="420">
-  </picture>
+  <img src="docs/customise.gif" alt="The settings panel beside Sora. Sora is renamed Pip and its face changes with every letter, then it gets the kitty shape, a pink pastel colour and square eyes. Typing Sora back and pressing unpin all brings the original back, and the panel closes." width="420">
 </p>
 
 Right-click your buddy to open its panel:
@@ -131,7 +116,7 @@ Found a bug or have an idea? [Open an issue](https://github.com/jaineeldev/deskt
 - **Knows your PC.** It reacts to your CPU and memory: stressed when your machine is working hard, sleepy when it's quiet. A small panel beside it shows CPU, RAM and the time.
 - **Personality.** More to say for every mood.
 
-Windows comes first. Linux and macOS may follow later.
+Windows comes first. Linux and macOS follow soon!
 
 ## Maybe one day
 
