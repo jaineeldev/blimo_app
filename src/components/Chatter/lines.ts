@@ -1,10 +1,11 @@
+import type { BuddyState } from '../Buddy/BuddyStates'
+
 /** Something to say: a fixed line, or one that uses the buddy's own name. */
 type Line = string | ((name: string) => string)
 
-/** What the buddy says on its own, a few ways each, so it doesn't sound like a recording. */
-const LINES = {
-  /** Now and then when you click it. */
-  click: [
+/** Now and then when you click it, something that fits how it's feeling. Idle gets the everyday lines. */
+const CLICK: Record<BuddyState, Line[]> = {
+  idle: [
     'Hi! Just keeping an eye on things.',
     'Hehe, do that again.',
     'I like it here.',
@@ -17,7 +18,100 @@ const LINES = {
     "I'm not up to anything. Promise.",
     (name) => `${name}, reporting for duty!`,
     'Oh! You found me.',
+    'Psst. Hi.',
+    "I've been guarding this corner all day.",
+    'Click me again, I dare you.',
+    (name) => `Yep, still ${name}. Still here.`,
   ],
+  happy: [
+    "Today's a good day.",
+    "Hehe, I'm in a great mood.",
+    'Everything is better with you around.',
+    'I could bounce around all day.',
+    'Best. Day. Ever.',
+    'You make this desktop a happy place.',
+  ],
+  sleepy: [
+    'Five more minutes…',
+    "Mm? I'm awake. Mostly.",
+    'Huh? Oh, hi. I was resting my eyes.',
+    'Is it bedtime yet?',
+    'Too comfy to move.',
+    "Wake me up when something's happening.",
+  ],
+  stressed: [
+    'Is it just me, or is everything a lot right now?',
+    'Deep breaths. In, out. Okay.',
+    'So much going on!',
+    "We've got this. Probably.",
+    "Don't panic. I'm not panicking. Are you panicking?",
+    'One thing at a time, right?',
+  ],
+  angry: [
+    'Hmph.',
+    "Not now, I'm fuming.",
+    'Grr. Okay, that was a nice click, though.',
+    "I'm not mad. Fine, I'm a little mad.",
+    'Give me a minute to cool off.',
+  ],
+  bored: [
+    'Finally, something to do!',
+    "I've counted every pixel. Twice.",
+    'Entertain me?',
+    'Ooh, a click. The highlight of my day.',
+    'Got any games on here?',
+    'Nothing happens around here. Except you.',
+  ],
+  surprised: [
+    'Whoa! You startled me.',
+    "Oh! Didn't see you there.",
+    'Ah! Warn me next time.',
+    "Eek! Okay. I'm okay.",
+  ],
+  sad: [
+    "I'm okay. Just a bit blue.",
+    'Thanks for checking on me.',
+    'A pat helps, honestly.',
+    'Some days are like that, huh?',
+    'Stay a minute?',
+  ],
+  curious: [
+    "Ooh, what's that you're doing?",
+    'What does that button do?',
+    'I have questions. So many questions.',
+    'Tell me everything.',
+    'What are you up to over there?',
+  ],
+  confused: [
+    "Wait, what's going on?",
+    "I'm lost. Where are we?",
+    'Huh? Say that again?',
+    "That doesn't add up.",
+    "I'll pretend I understood that.",
+  ],
+  love: ["You're the best, you know that?", "My heart's doing a little dance.", 'I like you a lot.', 'More, please!'],
+  wink: ["You didn't see anything.", 'Our little secret.', 'Heh, nice one.', "I know something you don't."],
+  focused: ["Shh, I'm concentrating.", 'In the zone right now.', "Let's get this done.", 'Nearly there, keep going.'],
+  smug: ["I'm kind of a big deal.", 'Told you so.', "Not to brag, but I'm adorable.", "I knew you'd come back."],
+  dizzy: [
+    "The room won't stop spinning.",
+    'Which one of you is the real you?',
+    "Whoa. Everything's wobbly.",
+    'Is the desktop meant to tilt like that?',
+  ],
+  watching: [
+    "Shh, it's getting good.",
+    'Want some popcorn?',
+    'Best seat in the house.',
+    "I'm not sharing. Okay, maybe one.",
+    "Don't spoil it for me!",
+  ],
+}
+
+/** What the buddy says on its own, a few ways each, so it doesn't sound like a recording. */
+const LINES = {
+  /** Clicked: the pool depends on its mood (see CLICK). */
+  click: CLICK.idle,
   /** Falling in love after a run of pets. */
   love: ["Okay, you're my favourite.", "Stop it, I'm blushing.", 'More pats, please!', 'I could get used to this.'],
   /** A belly rub getting going. */
@@ -43,6 +137,50 @@ const LINES = {
   charging: ['Ahh, power. Much better.', "Ooh, that's the good stuff.", 'Charging up!'],
   /** Just given one of the secret names. */
   secret: ['Wait, how did you know my secret name?', 'Ooh, a special name. I feel sparkly.', 'You found a secret! Shh.'],
+  /** Music started playing. */
+  music: [
+    'Ooh, I like this one.',
+    "Music! Okay, I'm bopping.",
+    'Is this your playlist? Nice taste.',
+    "Can't help it, I have to dance.",
+    "Tunes! Let's go.",
+    "Turn it up! Just kidding, it's perfect.",
+  ],
+  /** Now and then while it bops along. */
+  musicVibe: [
+    "This one's a bop.",
+    "I'm feeling this.",
+    "Okay, I'm officially vibing.",
+    'Do you take requests?',
+    "I've got rhythm. Mostly.",
+    "Don't mind me, just grooving.",
+  ],
+  /** A video started playing. */
+  video: [
+    'Ooh, what are we watching?',
+    "Movie time? I'll be quiet.",
+    "Shh, it's starting.",
+    "Don't mind me, I'll watch too.",
+    'I brought popcorn!',
+  ],
+  /** Now and then while it watches along. */
+  videoReact: [
+    'Ooh, what happens next?',
+    'Wait, go back!',
+    'Did you see that?',
+    "I'm invested now.",
+    'This popcorn is really good, by the way.',
+    'No way.',
+    'Okay, just one more.',
+  ],
+  /** Back after stepping aside for something full screen. */
+  returned: [
+    'Back! What did I miss?',
+    'That looked fun.',
+    'Oh, hi again!',
+    "All done? I'm back.",
+    "I stepped out so I wouldn't get in the way.",
+  ],
 } satisfies Record<string, Line[]>
 
 export type Topic = keyof typeof LINES
@@ -73,14 +211,34 @@ export function greetingAt(date = new Date()): Topic {
 /** Past midnight and before 5am. */
 export const isLate = (date = new Date()) => date.getHours() < 5
 
-const lastLine: Partial<Record<Topic, number>> = {}
+/**
+ * Each pool is dealt like a shuffled deck: every line comes up once before any comes round again, and
+ * a fresh deck never starts with the line it just said.
+ */
+const decks: Record<string, number[]> = {}
+const lastLine: Record<string, number> = {}
 
-/** One of the lines on a topic, at random, never the same one twice in a row. */
-export function lineFor(topic: Topic, name: string): string {
-  const options: Line[] = LINES[topic]
-  let i = Math.floor(Math.random() * options.length)
-  if (options.length > 1 && i === lastLine[topic]) i = (i + 1) % options.length
-  lastLine[topic] = i
-  const line = options[i]
+function deal(pool: string, size: number): number {
+  let deck = decks[pool]
+  if (!deck?.length) {
+    deck = Array.from({ length: size }, (_, i) => i)
+    for (let i = size - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[deck[i], deck[j]] = [deck[j], deck[i]]
+    }
+    // Lines are taken from the end.
+    if (size > 1 && deck[size - 1] === lastLine[pool]) [deck[0], deck[size - 1]] = [deck[size - 1], deck[0]]
+    decks[pool] = deck
+  }
+  const i = deck.pop() as number
+  lastLine[pool] = i
+  return i
+}
+
+/** A line on a topic. Clicks pick from the pool for `mood`. */
+export function lineFor(topic: Topic, name: string, mood: BuddyState = 'idle'): string {
+  const pool = topic === 'click' ? `click:${mood}` : topic
+  const options: Line[] = topic === 'click' ? CLICK[mood] : LINES[topic]
+  const line = options[deal(pool, options.length)]
   return typeof line === 'function' ? line(name) : line
 }

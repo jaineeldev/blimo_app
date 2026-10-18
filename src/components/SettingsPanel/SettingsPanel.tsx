@@ -63,7 +63,7 @@ function countPins(look: LookOverrides): number {
 }
 
 export function SettingsPanel() {
-  const { name, look, size, opacity, followCursor, alwaysOnTop, quiet, state, screenSpace } = useBuddyStore(
+  const { name, look, size, opacity, followCursor, alwaysOnTop, quiet, reactToMedia, stepAside, state, screenSpace } = useBuddyStore(
     useShallow((s) => ({
       name: s.name,
       look: s.look,
@@ -72,6 +72,8 @@ export function SettingsPanel() {
       followCursor: s.followCursor,
       alwaysOnTop: s.alwaysOnTop,
       quiet: s.quiet,
+      reactToMedia: s.reactToMedia,
+      stepAside: s.stepAside,
       state: s.state,
       screenSpace: s.screenSpace,
     })),
@@ -306,8 +308,18 @@ export function SettingsPanel() {
               }}
             />
           )}
+          {/* The helper that notices these is part of the app, so a plain browser preview has neither. */}
+          {window.buddy && (
+            <>
+              <Toggle label="bop to music, watch videos" checked={reactToMedia} onChange={(v) => update({ reactToMedia: v })} />
+              <Toggle label="step aside for full screen" checked={stepAside} onChange={(v) => update({ stepAside: v })} />
+            </>
+          )}
           <Toggle label="quiet mode" checked={quiet} onChange={(v) => update({ quiet: v })} />
-          <p className="hint">Quiet mode stops the chatter. Update news still shows.</p>
+          <p className="hint">
+            Music and videos are noticed on your PC, and nothing about them is kept or sent. Quiet mode stops the
+            chatter; update news still shows.
+          </p>
         </Section>
       </div>
 

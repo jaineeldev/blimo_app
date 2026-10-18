@@ -58,9 +58,22 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 - **Pet it.** It squishes under your cursor and springs back, happy, and now and then it winks. Double-click and it jumps. Keep petting and it falls in love. Stroke your cursor back and forth over it for a belly rub and it melts flat.
 - **Pick it up.** It looks surprised, swings along behind your cursor and squashes as it lands, right where you put it. Shake it and it gets dizzy. Whip your cursor around fast and it gets dizzy just watching.
 - **It notices your day.** It perks up when your cursor arrives, gets bored after 2 minutes alone and dozes off after 5, with little z's floating up. Typing counts as being around. It says hello for the time of day, welcome back after a break, and might suggest bed after midnight. On a laptop it feels the battery: drained when it's low, perky when you plug in.
-- **It talks.** Every so often it says something in a speech bubble: a comment when you click it, a word about a good belly rub, a complaint when you've made it dizzy. It never says the same thing twice in a row, remembers little milestones like your 100th pet and a week together, and there are a few secret names to find. Prefer it quiet? Turn on quiet mode.
+- **It talks.** Every so often it says something in a speech bubble: a comment when you click it, a word about a good belly rub, a complaint when you've made it dizzy. What it says when you click depends on its mood, and it works through everything it could say before it repeats itself. It remembers little milestones like your 100th pet and a week together, and there are a few secret names to find. Prefer it quiet? Turn on quiet mode.
 
-**Always on top, never in the way.** It stays above your other windows, full-screen videos and most games included, and follows you to every virtual desktop. (A game in exclusive full-screen mode draws over everything, so set it to borderless or windowed to keep your buddy in view.) Only the buddy itself catches your mouse. The space around it lets clicks straight through to whatever is underneath. Press **Ctrl+Alt+B** to hide it or bring it back, handy when you're sharing your screen.
+**Into your music and shows.** When music plays, it bops along with little notes floating up. When a video plays, it grabs a bucket of popcorn, turns to watch with wide eyes, munches away and reacts now and then. And when a game or video goes full screen on its screen, it fades out of the way and comes back when you're done. It works with Spotify, your browser and most players, going by the same media info as the Windows volume pop-up. It never listens to your audio.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/dark/music.gif">
+    <img src="docs/light/music.gif" alt="A little now-playing card switches to playing. Sora looks over, smiles, says &quot;Ooh, I like this one.&quot; and bops along to the beat with gold music notes floating up, the card's bars bouncing in time, until the music stops." width="400">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/dark/watching.gif">
+    <img src="docs/light/watching.gif" alt="Sora watches a night sky playing in a video window, holding a striped bucket of popcorn and eating a piece now and then. A shooting star crosses the screen; Sora gasps and says &quot;Ooh, what happens next?&quot;, then goes back to its popcorn." width="400">
+  </picture>
+</p>
+
+**Always on top, never in the way.** It stays above your other windows and follows you to every virtual desktop. When a game or video goes full screen on its screen, it steps aside until you're done. Rather keep it there? Turn off **step aside for full screen** and it stays on top of those too. (A game in exclusive full-screen mode draws over everything, so set it to borderless or windowed to keep your buddy in view.) Only the buddy itself catches your mouse. The space around it lets clicks straight through to whatever is underneath. Press **Ctrl+Alt+B** to hide it or bring it back, handy when you're sharing your screen.
 
 **Stays where you put it.** It remembers where you left it between launches, and hops back onto a screen if the one it was on disappears. Push it past the edge of your screen and it tucks in halfway, leaning out to peek at you. It only does that when you drag it there; it never moves on its own.
 
@@ -92,7 +105,7 @@ Right-click your buddy to open its panel:
 - Pick a body shape, including six hand-drawn extras: mochi, bean, ghost, kitty, sprout and slime.
 - Choose its eyes (dots, domes, squares, capsules or visor) and fine-tune them: size, width, spacing, squareness, tilt, height and how far left or right they sit.
 - Set its colour and tone, its size and its opacity.
-- Turn cursor-following, always-on-top, start with Windows and quiet mode on or off. Quiet mode stops the chatter, but your buddy still tells you about updates.
+- Turn cursor-following, always-on-top, start with Windows, bopping to music and watching videos, stepping aside for full screen, and quiet mode on or off. Quiet mode stops the chatter, but your buddy still tells you about updates.
 - Check for updates, hide it or quit it, from the buttons at the bottom.
 
 Everything saves automatically, and your buddy is waiting just as you left it next time.
@@ -116,6 +129,9 @@ You only need to install it once. After that it keeps itself up to date, and you
 - It reads where your mouse pointer is, so its eyes can follow it.
 - It checks how long it's been since you last used your keyboard or mouse, so it knows when you're away. It never sees what you type.
 - On a laptop, it reads the battery level and whether it's charging.
+- It checks whether music or a video is playing, and in which app, from Windows' media info (what the volume pop-up shows). It never listens to the audio or reads the name of the song or show.
+- Browsers call everything music, so to tell a video from a song it checks your browser windows' titles for a video site, such as YouTube. It also checks whether the window in front is full screen, so it can step aside.
+- Those last two are done by a small helper, `DesktopBuddyHelper.exe`, that runs alongside DesktopBuddy and closes with it. It keeps nothing and sends nothing anywhere. Turn off both options in the panel and it doesn't run at all.
 - It saves your buddy's name, settings and the milestones it remembers on your PC.
 - It connects to GitHub, and nothing else, to check for new versions. It doesn't collect or send any data about you.
 - It starts with Windows only if you turn that option on.
@@ -127,9 +143,7 @@ Found a bug or have an idea? [Open an issue](https://github.com/jaineeldev/deskt
 
 ## Coming soon
 
-- **Notices what you're up to.** It bops along to your music and watches videos with you, with an option to step aside during full-screen videos and games.
 - **Knows your PC.** It reacts to your CPU and memory: stressed when your machine is working hard, sleepy when it's quiet. A small panel beside it shows CPU, RAM and the time.
-- **Personality.** More to say for every mood.
 
 Windows comes first. Linux and macOS follow soon!
 
@@ -172,6 +186,8 @@ npm install
 npm run dev
 ```
 
+Before starting, it builds the small helper in `helper/` (it notices music, videos and full-screen apps) with the C# compiler that comes with Windows, so there's nothing extra to install.
+
 Right-click the buddy to customise it. To browse lots of faces at once, open `http://localhost:5173/?gallery` while the dev server is running.
 
 To build the Windows installer:
@@ -192,6 +208,7 @@ If the build stops with "Cannot create symbolic link", turn on Windows Developer
 | Animation | Framer Motion + CSS | Mood changes, eye movement, breathing and blinking |
 | Desktop Shell | Electron + Vite | Transparent always-on-top window, click-through, tray |
 | State | Zustand | Moods, plus settings saved between restarts |
+| Music, videos, full screen | A small C# helper, built with the compiler that comes with Windows | What's playing (from Windows' media info) and whether something is full screen |
 | System Stats | C (native Node addon via `node-addon-api`) *(planned)* | CPU, RAM via Windows API |
 | Packaging | electron-builder | Windows installer |
 | Updates | electron-updater | New versions from GitHub Releases, installed on restart |
@@ -211,6 +228,7 @@ desktop_buddy/
 │   ├── windowState.ts       # Remembers where the buddy was left, and keeps it on a screen
 │   ├── peek.ts              # Tucks the buddy in when it's dragged past a screen edge
 │   ├── activity.ts          # Time since any keyboard or mouse input, for boredom and sleep
+│   ├── media.ts             # Runs the helper; music and videos for the buddy, stepping aside for full screen
 │   ├── updater.ts           # Checks GitHub Releases, downloads updates, installs on restart
 │   └── stats-bridge.ts      # (planned) Calls the C addon, exposes via IPC
 ├── src/
@@ -228,6 +246,8 @@ desktop_buddy/
 │   ├── dev/Gallery.tsx      # Face browser, opened with ?gallery
 │   ├── whatsNew.ts          # Release notes, in the buddy's voice
 │   └── App.tsx
+├── helper/                  # DesktopBuddyHelper.cs: what's playing, and whether something is full screen
+├── scripts/                 # build-helper.mjs builds the helper with Windows' own C# compiler
 ├── native/                  # (planned) stats.c, stats.h, binding.gyp
 └── docs/                    # README artwork
 ```
@@ -278,16 +298,16 @@ DesktopBuddy is built in public, one phase at a time. Ticked items have shipped;
 - [x] Start with Windows and a quiet mode in the panel
 - [x] The panel keeps clear of anything your buddy is saying, and speech bubbles are centred
 
-#### Next up — Notices what you're up to
+#### ✅ Shipped — v1.1, notices what you're up to
 > It reacts to what's happening on your screen, without ever listening to your audio or reading your keys or files.
 
-- [ ] Bops along with floating music notes while music plays, using Windows' media info
-- [ ] Watches videos with you, with an option to step aside during full-screen videos and games
+- [x] Bops along with floating music notes while music plays, using Windows' media info
+- [x] Watches videos with you, and steps aside during full-screen videos and games
 - [x] Battery moods on laptops: drained when it's low, perky when it's plugged in
 - [x] Time-of-day greetings (morning, afternoon, evening, late night), and welcome back after a break
-- [ ] A pool of things to say for each mood, so it never sounds like a recording
+- [x] A pool of things to say for each mood, so it never sounds like a recording
 
-#### Then — Knows your PC
+#### Next up — Knows your PC
 > Real C that reads system stats through the Windows API, and a buddy that reacts to them.
 
 - [ ] Set up `node-addon-api` in the project

@@ -21,24 +21,49 @@ const INTRO_DELAY_AT_LAUNCH_MS = 1_700
 const INTRO_DELAY_REPLAY_MS = 300
 
 function App() {
-  const { name, look, size, opacity, followCursor, alwaysOnTop, onboarded, mood, bounce, panelOpen, whatsNew, melting, peek } =
-    useBuddyStore(
-      useShallow((s) => ({
-        name: s.name,
-        look: s.look,
-        size: s.size,
-        opacity: s.opacity,
-        followCursor: s.followCursor,
-        alwaysOnTop: s.alwaysOnTop,
-        onboarded: s.onboarded,
-        mood: shownMood(s),
-        bounce: s.bounce,
-        panelOpen: s.panelOpen,
-        whatsNew: s.whatsNew,
-        melting: s.melting,
-        peek: s.peek,
-      })),
-    )
+  const {
+    name,
+    look,
+    size,
+    opacity,
+    followCursor,
+    alwaysOnTop,
+    onboarded,
+    mood,
+    bounce,
+    panelOpen,
+    whatsNew,
+    melting,
+    peek,
+    reactToMedia,
+    stepAside,
+    media,
+    videoAt,
+    asleep,
+    aside,
+  } = useBuddyStore(
+    useShallow((s) => ({
+      name: s.name,
+      look: s.look,
+      size: s.size,
+      opacity: s.opacity,
+      followCursor: s.followCursor,
+      alwaysOnTop: s.alwaysOnTop,
+      onboarded: s.onboarded,
+      mood: shownMood(s),
+      bounce: s.bounce,
+      panelOpen: s.panelOpen,
+      whatsNew: s.whatsNew,
+      melting: s.melting,
+      peek: s.peek,
+      reactToMedia: s.reactToMedia,
+      stepAside: s.stepAside,
+      media: s.media,
+      videoAt: s.videoAt,
+      asleep: s.ambient === 'sleepy',
+      aside: s.aside,
+    })),
+  )
   const launchedAt = useRef(Date.now())
   const [pressed, setPressed] = useState(false)
   const [hovered, setHovered] = useState(false)
@@ -105,10 +130,15 @@ function App() {
     window.buddy?.setAlwaysOnTop(alwaysOnTop)
   }, [alwaysOnTop])
 
+  useEffect(() => {
+    window.buddy?.setMediaOptions({ react: reactToMedia, stepAside })
+  }, [reactToMedia, stepAside])
+
   const introDelay = Date.now() - launchedAt.current < 3_000 ? INTRO_DELAY_AT_LAUNCH_MS : INTRO_DELAY_REPLAY_MS
 
   return (
-    <div className="stage">
+    // Steps aside (fades out) while a full-screen app is on its screen; the main process then hides the window.
+    <div className={aside ? 'stage stage--aside' : 'stage'}>
       <div className="stage-buddy" style={{ opacity }} {...interaction}>
         <Buddy
           name={name}
@@ -122,6 +152,11 @@ function App() {
           melting={melting}
           peek={peek}
           sparkle={sparkle}
+          // Bops to music while awake, except while held, so it doesn't fight the carry swing.
+          groove={media === 'music' && !asleep && !pressed}
+          // Watches the video, unless you're hovering over it, when it looks at you. Popcorn either way.
+          lookAt={media === 'video' && !hovered ? videoAt : null}
+          snacking={media === 'video'}
         />
       </div>
       {!onboarded && <Onboarding startDelay={introDelay} />}

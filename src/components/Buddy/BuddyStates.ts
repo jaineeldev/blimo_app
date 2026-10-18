@@ -13,7 +13,9 @@ export type BuddyState =
   | 'wink'
   | 'focused'
   | 'smug'
-  | 'dizzy';
+  | 'dizzy'
+  // Only while a video plays, so it isn't in the list below that the panel and gallery offer.
+  | 'watching';
 
 export const BUDDY_STATES: BuddyState[] = [
   'idle',

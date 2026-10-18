@@ -44,6 +44,23 @@ interface MenuState {
   update: import('./updater').UpdateState
 }
 
+/** What's playing, going by Windows' media info: music or a video (null for nothing). */
+type MediaKind = 'music' | 'video'
+
+interface MediaNow {
+  playing: MediaKind | null
+  /** The middle of the video's window, relative to the buddy's window, when it could be found. */
+  lookAt: { x: number; y: number } | null
+}
+
+/** The panel's switches for noticing what's on screen. The helper only runs while one is on. */
+interface MediaOptions {
+  /** Bop to music and watch videos along with you. */
+  react: boolean
+  /** Fade out of the way while something is full screen on the buddy's screen. */
+  stepAside: boolean
+}
+
 /** A box in px, relative to the window's content area. */
 interface BodyRect {
   left: number
@@ -101,5 +118,10 @@ interface Window {
     checkForUpdates(): void
     /** Closes DesktopBuddy completely, like Quit in the tray menu. */
     quit(): void
+    /** Music or a video started or stopped, or the video's window moved. Windows only. */
+    onMedia(callback: (media: MediaNow) => void): () => void
+    /** A full-screen app took over the buddy's screen (fade out), or it's gone again (fade back in). */
+    onStepAside(callback: (aside: boolean) => void): () => void
+    setMediaOptions(options: MediaOptions): void
   }
 }

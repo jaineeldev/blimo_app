@@ -31,8 +31,9 @@
   }
 }
 
-/* A slow lean from side to side, rocking on its base. */
+/* A slow lean from side to side, rocking on its base. Also the box the music notes float in. */
 .b-sway {
+  position: relative;
   animation: b-sway calc(4.6s * var(--b-rate, 1)) ease-in-out var(--b-sway-phase, 0s) infinite alternate;
 }
 
@@ -42,6 +43,102 @@
   }
   to {
     transform: rotate(1.2deg);
+  }
+}
+
+/*
+ * Music: a bop on every beat, leaning left then right, squashing down onto its base and springing
+ * back up between beats. Two beats per loop at 109 a minute (GROOVE_MS in Buddy.tsx).
+ */
+.b-groove {
+  animation: b-groove 1.1s ease-in-out infinite;
+}
+
+@keyframes b-groove {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1, 1);
+  }
+  14% {
+    transform: translateY(0) rotate(-3.5deg) scale(1.045, 0.95);
+  }
+  36% {
+    transform: translateY(-1.2%) rotate(-1deg) scale(0.985, 1.02);
+  }
+  64% {
+    transform: translateY(0) rotate(3.5deg) scale(1.045, 0.95);
+  }
+  86% {
+    transform: translateY(-1.2%) rotate(1deg) scale(0.985, 1.02);
+  }
+}
+
+/* Notes float up off the top of the head, drifting outwards and tilting, one after another. */
+.b-notes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.b-note {
+  position: absolute;
+  /* Sizes and offsets in % of the buddy's width, so they're the same viewBox units at any size. */
+  width: 10.5%;
+  margin: -5.25% 0 0 -5.25%;
+  opacity: 0;
+  animation: b-note 2.4s ease-out infinite both;
+}
+
+.b-note svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes b-note {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.5);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(calc(var(--drift, 0) * 40%), -50%) rotate(calc(var(--tilt, 0) * 1deg)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--drift, 0) * 130%), -280%) rotate(calc(var(--tilt, 0) * -0.6deg)) scale(0.85);
+  }
+}
+
+/*
+ * Popcorn while it watches a video: a piece hops out of the bucket, arcs up and drops into its face,
+ * shrinking away as it's eaten. --dx and --dy are the trip in viewBox units (BITE_MS in Buddy.tsx).
+ */
+.b-bite {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: b-bite 0.8s ease-in-out both;
+}
+
+@keyframes b-bite {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  10% {
+    opacity: 1;
+  }
+  40% {
+    transform: translate(calc(var(--dx, 0) * 0.45px), calc(var(--dy, 0) * 1px - 13px)) scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(calc(var(--dx, 0) * 1px), calc(var(--dy, 0) * 1px)) scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--dx, 0) * 1px), calc(var(--dy, 0) * 1px)) scale(0);
   }
 }
 
@@ -181,6 +278,7 @@
   .b-breathe,
   .b-bob,
   .b-sway,
+  .b-groove,
   .b-shake,
   .b-orbit {
     animation: none;

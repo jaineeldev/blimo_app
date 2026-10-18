@@ -5,6 +5,7 @@ import { createTray } from './tray'
 import { startCursorFeed } from './cursor'
 import { registerWindowControls, stayOnTop } from './interaction'
 import { registerActivity } from './activity'
+import { startMediaWatch } from './media'
 import { startUpdates } from './updater'
 import { keepOnScreen, savedPosition } from './windowState'
 
@@ -98,6 +99,7 @@ function createWindow() {
   createTray(win, startUpdates(win))
   startCursorFeed(win)
   keepOnScreen(win)
+  startMediaWatch(win)
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common

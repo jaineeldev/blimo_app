@@ -200,6 +200,13 @@ export const EXPRESSIONS: Record<BuddyState, Expression> = {
     rate: 1.2,
     blink: false,
   },
+
+  // Watching a video: bright, wide eyes on the screen, sitting up a little, quite taken with it.
+  watching: {
+    pose: pose({ sx: 1.12, sy: 1.22, lift: 0.18, lock: 1 }, { bodyY: -0.8, squash: -0.025 }),
+    rate: 0.85,
+    blink: true,
+  },
 }
 
 const mix = (a: number, b: number, t: number) => a + (b - a) * t

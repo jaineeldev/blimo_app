@@ -16,6 +16,9 @@
     "dist",
     "dist-electron"
   ],
+  // The little Windows helper that notices music, videos and full-screen apps (helper/, built by
+  // scripts/build-helper.mjs). It runs as its own program, so it sits outside app.asar.
+  "extraResources": [{ "from": "helper/bin/DesktopBuddyHelper.exe", "to": "helper/DesktopBuddyHelper.exe" }],
   // Chromium ships translations of its own menus and messages in about 50 languages. The app is
   // English-only, so keeping just these saves around 37 MB.
   "electronLanguages": ["en-GB", "en-US"],

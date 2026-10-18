@@ -24,6 +24,10 @@ export interface BuddySettings {
   alwaysOnTop: boolean
   /** No chatter: greetings, click lines, milestones and the like. Update news still shows. */
   quiet: boolean
+  /** Bops along to music and watches videos with you, going by Windows' media info. */
+  reactToMedia: boolean
+  /** Fades out of the way while a full-screen app or game is on its screen. */
+  stepAside: boolean
   /** Whether the first-run intro has been finished or skipped. */
   onboarded: boolean
   /** The intro step you'd reached, so a restart picks up there instead of starting over. */
@@ -62,6 +66,12 @@ interface BuddyStore extends BuddySettings {
   chatter: { text: string; id: number } | null
   /** An update ring or update message is showing, so chatter waits its turn. */
   updateBusy: boolean
+  /** Music or a video playing right now (only while `reactToMedia` is on). */
+  media: MediaKind | null
+  /** The middle of the video's window, relative to the buddy's window, so it can watch along. */
+  videoAt: { x: number; y: number } | null
+  /** Faded out for a full-screen app. */
+  aside: boolean
   update: (settings: Partial<BuddySettings>) => void
   setName: (name: string) => void
   setState: (state: BuddyState) => void
@@ -85,6 +95,8 @@ interface BuddyStore extends BuddySettings {
   hush: (id?: number) => void
   setUpdateBusy: (busy: boolean) => void
   markMilestone: (id: string) => void
+  setMedia: (media: MediaNow) => void
+  setAside: (aside: boolean) => void
 }
 
 export const SIZE_RANGE = { min: 120, max: 280 } as const
@@ -115,6 +127,8 @@ export const useBuddyStore = create<BuddyStore>()(
       followCursor: true,
       alwaysOnTop: true,
       quiet: false,
+      reactToMedia: true,
+      stepAside: true,
       onboarded: false,
       introStep: null,
       lastVersion: null,
@@ -134,6 +148,9 @@ export const useBuddyStore = create<BuddyStore>()(
       melting: false,
       chatter: null,
       updateBusy: false,
+      media: null,
+      videoAt: null,
+      aside: false,
       update: (settings) => set(settings),
       setName: (name) => set({ name }),
       setState: (state) => set({ state }),
@@ -169,6 +186,8 @@ export const useBuddyStore = create<BuddyStore>()(
       // Update news always gets the floor.
       setUpdateBusy: (busy) => set(busy ? { updateBusy: true, chatter: null } : { updateBusy: false }),
       markMilestone: (id) => set((s) => (s.milestones.includes(id) ? {} : { milestones: [...s.milestones, id] })),
+      setMedia: ({ playing, lookAt }) => set({ media: playing, videoAt: lookAt }),
+      setAside: (aside) => set({ aside }),
     }),
     {
       name: 'desktop-buddy/settings',
@@ -191,6 +210,8 @@ export const useBuddyStore = create<BuddyStore>()(
         followCursor: s.followCursor,
         alwaysOnTop: s.alwaysOnTop,
         quiet: s.quiet,
+        reactToMedia: s.reactToMedia,
+        stepAside: s.stepAside,
         onboarded: s.onboarded,
         introStep: s.introStep,
         lastVersion: s.lastVersion,

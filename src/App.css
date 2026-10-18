@@ -1,6 +1,12 @@
 .stage {
   position: fixed;
   inset: 0;
+  transition: opacity 0.35s ease;
+}
+
+/* Out of the way of a full-screen app or game; FADE_MS in electron/media.ts waits for this. */
+.stage--aside {
+  opacity: 0;
 }
 
 /* The buddy sits in the middle of the window; the settings panel opens beside it. */

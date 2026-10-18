@@ -16,6 +16,8 @@ interface GazeOptions {
   /** Furthest the eyes travel, in viewBox units. */
   travel?: number
   enabled?: boolean
+  /** Somewhere to keep looking instead of at the cursor, relative to the window: a video, say. */
+  target?: { x: number; y: number } | null
 }
 
 /**
@@ -25,11 +27,13 @@ interface GazeOptions {
  */
 export function useGaze(
   svgRef: RefObject<SVGSVGElement>,
-  { center, travel = GAZE_TRAVEL, enabled = true }: GazeOptions,
+  { center, travel = GAZE_TRAVEL, enabled = true, target = null }: GazeOptions,
 ): { x: MotionValue<number>; y: MotionValue<number> } {
   const x = useSpring(0, SACCADE)
   const y = useSpring(0, SACCADE)
   const { x: cx, y: cy } = center
+  const tx = target?.x
+  const ty = target?.y
 
   useEffect(() => {
     if (!enabled) {
@@ -53,6 +57,12 @@ export function useGaze(
       const reach = travel * (1 - Math.exp(-dist / 140))
       x.set((dx / dist) * reach)
       y.set((dy / dist) * reach)
+    }
+
+    // Eyes fixed on something, so no glancing around and no following the cursor.
+    if (tx !== undefined && ty !== undefined) {
+      aim({ x: tx, y: ty })
+      return
     }
 
     const glance = () => {
@@ -79,7 +89,7 @@ export function useGaze(
       unsubscribe()
       window.clearTimeout(glanceTimer)
     }
-  }, [svgRef, cx, cy, travel, enabled, x, y])
+  }, [svgRef, cx, cy, travel, enabled, x, y, tx, ty])
 
   return { x, y }
 }

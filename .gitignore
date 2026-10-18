@@ -12,9 +12,10 @@ dist
 dist-ssr
 *.local
 
-# Build output: Electron's compiled main/preload, and the installers
+# Build output: Electron's compiled main/preload, the installers and the compiled helper
 dist-electron
 release
+helper/bin
 
 # Editor directories and files
 .vscode/*

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { isSecretName } from '../components/Buddy/secretNames'
+import type { BuddyState } from '../components/Buddy/BuddyStates'
 import { MILESTONES, greetingAt, isLate, lineFor, type Milestone, type Topic } from '../components/Chatter/lines'
-import { useBuddyStore } from '../stores/buddyStore'
+import { shownMood, useBuddyStore } from '../stores/buddyStore'
 
 /** Gets bored after this long without any input, and falls asleep after the second. */
 const BORED_AFTER_MS = 2 * 60_000
@@ -56,7 +57,33 @@ const CHAT_CHANCE: Record<Topic, number> = {
   batteryVeryLow: 1,
   charging: 0.6,
   secret: 1,
+  music: 0.6,
+  musicVibe: 0.25,
+  video: 0.5,
+  videoReact: 0.35,
+  returned: 0.4,
 }
+/** Clicked while it's feeling something other than idle, it's keener to say so. */
+const MOOD_CLICK_CHANCE = 0.4
+
+/** It mentions music or a video starting at most this often, so pausing and playing again doesn't keep setting it off. */
+const MEDIA_LINE_REST_MS = 10 * 60_000
+/** While music plays it closes its eyes and vibes now and then, at a random gap between these... */
+const VIBE_GAP_MS = [18_000, 40_000] as const
+/** ...and while a video plays it reacts to what's happening, at a random gap between these. */
+const WATCH_GAP_MS = [20_000, 45_000] as const
+/** What it might do at a moment in a video, and how likely each one is. */
+const WATCH_MOMENTS: [BuddyState, number, number][] = [
+  // mood, how long (ms), weight
+  ['surprised', 900, 0.3],
+  ['happy', 1_400, 0.25],
+  ['curious', 1_200, 0.2],
+  ['confused', 1_400, 0.12],
+  ['sad', 1_600, 0.08],
+  ['love', 2_000, 0.05],
+]
+/** Back from stepping aside for something full screen, it waits a moment before saying hi. */
+const RETURN_LINE_MS = 700
 
 /** It says hello once it has properly woken up at launch, and welcome back a moment after you return. */
 const GREET_AFTER_MS = 2_400
@@ -104,36 +131,54 @@ export function useReactions() {
     rub: { dir: 0, travel: 0, strokes: [] as number[], since: 0, loved: false, timer: 0 },
     whip: { dir: { x: 0, y: 0 }, turns: [] as number[], steps: [] as { at: number; px: number }[], restUntil: 0 },
     battery: { low: false, veryLow: false, charging: true },
+    /** When it last mentioned music, and a video, starting. */
+    mediaSaid: { music: 0, video: 0 },
   })
 
   const handlers = useMemo(() => {
     const s = state.current
     const store = useBuddyStore.getState
 
-    // Bored and asleep come from being left alone; curious from a lingering cursor; drained from a low battery.
+    // Bored and asleep come from being left alone (music keeps boredom away); curious from a lingering
+    // cursor; the watching face from a video; drained from a low battery.
     const refreshAmbient = () => {
+      const { media } = store()
       store().setAmbient(
-        s.idle === 'asleep' ? 'sleepy' : s.idle === 'bored' ? 'bored' : s.hovering ? 'curious' : s.battery.low ? 'sad' : null,
+        s.idle === 'asleep'
+          ? 'sleepy'
+          : s.idle === 'bored' && !media
+            ? 'bored'
+            : s.hovering
+              ? 'curious'
+              : media === 'video'
+                ? 'watching'
+                : s.battery.low
+                  ? 'sad'
+                  : null,
       )
     }
 
     /**
      * Says a line, as long as nothing else has the floor: not during the intro, an update message or
-     * the what's new card, and not over the customise panel unless `overPanel`. Never in quiet mode;
-     * a milestone then waits until it's switched off.
+     * the what's new card, not while it's stepped aside, and not over the customise panel unless
+     * `overPanel`. Never in quiet mode; a milestone then waits until it's switched off.
      */
     const speak = (text: string, overPanel = false) => {
-      const { quiet, onboarded, panelOpen, whatsNew, updateBusy, chatter, say } = store()
-      if (quiet || !onboarded || (panelOpen && !overPanel) || whatsNew || updateBusy || chatter) return false
+      const { quiet, onboarded, panelOpen, whatsNew, updateBusy, chatter, aside, say } = store()
+      if (quiet || !onboarded || (panelOpen && !overPanel) || whatsNew || updateBusy || chatter || aside) return false
       s.lastChat = Date.now()
       say(text)
       return true
     }
 
-    /** Sometimes says something about what just happened. `always` skips the dice and the rest between lines. */
-    const talk = (topic: Topic, always = false) => {
-      if (!always && (Date.now() - s.lastChat < CHAT_REST_MS || Math.random() >= CHAT_CHANCE[topic])) return false
-      return speak(lineFor(topic, store().name), topic === 'secret')
+    /**
+     * Sometimes says something about what just happened. `always` skips the dice and the rest between
+     * lines. A click line fits `mood`.
+     */
+    const talk = (topic: Topic, always = false, mood: BuddyState = 'idle') => {
+      const chance = topic === 'click' && mood !== 'idle' ? MOOD_CLICK_CHANCE : CHAT_CHANCE[topic]
+      if (!always && (Date.now() - s.lastChat < CHAT_REST_MS || Math.random() >= chance)) return false
+      return speak(lineFor(topic, store().name, mood), topic === 'secret')
     }
 
     /** Mentions a milestone the first time it can. If something else has the floor, it waits for next time. */
@@ -246,6 +291,8 @@ export function useReactions() {
       },
       pet() {
         const now = Date.now()
+        // How it was feeling when you clicked, before the click changes it.
+        const mood = shownMood(store())
         const quick = now - s.lastClick < DOUBLE_CLICK_MS
         s.lastClick = now
         s.pets = s.pets.filter((t) => now - t < LOVE_WINDOW_MS).concat(now)
@@ -268,7 +315,7 @@ export function useReactions() {
         }
         const milestone = PET_MILESTONES[lifetimePets]
         if (milestone && celebrateMilestone(milestone)) return
-        if (topic) talk(topic)
+        if (topic) talk(topic, false, mood)
       },
       grab() {
         s.shaken = false
@@ -318,6 +365,38 @@ export function useReactions() {
         store().celebrate()
         talk('secret', true)
       },
+      /** Music or a video started or stopped, or the video's window moved. */
+      noticeMedia(next: MediaNow) {
+        const was = store().media
+        store().setMedia(next)
+        if (next.playing === was) return
+        refreshAmbient()
+        const kind = next.playing
+        // Asleep, it sleeps right through it.
+        if (!kind || s.idle === 'asleep') return
+        store().react(kind === 'music' ? 'happy' : 'curious', kind === 'music' ? 1_200 : 900)
+        if (Date.now() - s.mediaSaid[kind] > MEDIA_LINE_REST_MS && talk(kind)) s.mediaSaid[kind] = Date.now()
+      },
+      /** A moment while music or a video plays: it vibes along, or reacts to the video. */
+      mediaMoment(kind: MediaKind) {
+        // Not while it's asleep, or busy reacting to you.
+        if (s.idle === 'asleep' || store().reaction) return
+        if (kind === 'music') {
+          store().react('happy', 1_600)
+          talk('musicVibe')
+          return
+        }
+        let roll = Math.random() * WATCH_MOMENTS.reduce((sum, [, , weight]) => sum + weight, 0)
+        const [mood, ms] = WATCH_MOMENTS.find(([, , weight]) => (roll -= weight) < 0) ?? WATCH_MOMENTS[0]
+        store().react(mood, ms)
+        talk('videoReact')
+      },
+      /** Faded out for something full screen, or back again afterwards. */
+      stepAside(aside: boolean) {
+        const was = store().aside
+        store().setAside(aside)
+        if (was && !aside) window.setTimeout(() => talk('returned'), RETURN_LINE_MS)
+      },
       hover(on: boolean) {
         s.over = on
         if (!on) endRub()
@@ -360,7 +439,9 @@ export function useReactions() {
     const s = state.current
     const check = window.setInterval(async () => {
       const bridge = window.buddy
-      const away = bridge ? (await bridge.getIdleSeconds()) * 1000 : Date.now() - s.lastMove
+      // Sitting back watching a video counts as being around, even with no input for a while.
+      const watching = useBuddyStore.getState().media === 'video'
+      const away = watching ? 0 : bridge ? (await bridge.getIdleSeconds()) * 1000 : Date.now() - s.lastMove
       const next: Idle = away > ASLEEP_AFTER_MS ? 'asleep' : away > BORED_AFTER_MS ? 'bored' : 'awake'
       if (next === s.idle) return
       // Coming back gets a little wake-up; drifting off just changes the mood.
@@ -421,6 +502,34 @@ export function useReactions() {
       window.clearTimeout(timer)
     }
   }, [handlers])
+
+  // Music, videos and full-screen apps, from the helper (Windows only).
+  useEffect(() => {
+    const bridge = window.buddy
+    if (!bridge) return
+    const offMedia = bridge.onMedia(handlers.noticeMedia)
+    const offAside = bridge.onStepAside(handlers.stepAside)
+    return () => {
+      offMedia()
+      offAside()
+    }
+  }, [handlers])
+
+  // While something plays, a moment now and then: vibing to the music, or reacting to the video.
+  const media = useBuddyStore((s) => s.media)
+  useEffect(() => {
+    if (!media) return
+    const [min, max] = media === 'music' ? VIBE_GAP_MS : WATCH_GAP_MS
+    let timer = 0
+    const later = () => {
+      timer = window.setTimeout(() => {
+        handlers.mediaMoment(media)
+        later()
+      }, min + Math.random() * (max - min))
+    }
+    later()
+    return () => window.clearTimeout(timer)
+  }, [media, handlers])
 
   // Perks up to see what you're doing when the customise panel opens.
   const panelOpen = useBuddyStore((s) => s.panelOpen)

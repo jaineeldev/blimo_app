@@ -58,4 +58,7 @@ contextBridge.exposeInMainWorld('buddy', {
   setStartWithWindows: (on: boolean) => ipcRenderer.send('app:start-with-windows', on),
   checkForUpdates: () => ipcRenderer.send('update:check'),
   quit: () => ipcRenderer.send('app:quit'),
+  onMedia: (callback: (media: MediaNow) => void) => subscribe('buddy:media', callback),
+  onStepAside: (callback: (aside: boolean) => void) => subscribe('buddy:step-aside', callback),
+  setMediaOptions: (options: MediaOptions) => ipcRenderer.send('media:options', options),
 })
