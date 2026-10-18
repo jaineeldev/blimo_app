@@ -5,6 +5,16 @@
  */
 export const WHATS_NEW: { version: string; notes: string[] }[] = [
   {
+    version: '1.1.0',
+    notes: [
+      'Play some music and I bop along, with little notes floating up.',
+      "Put a video on and I'll grab some popcorn and watch it with you. I might gasp at the good bits.",
+      "When a game or video goes full screen, I step out of the way and come back when you're done.",
+      "I've got lots more to say, and what I say when you click me depends on how I'm feeling.",
+      "I only know that something's playing, never what. You can switch all of this off in my panel.",
+    ],
+  },
+  {
     version: '1.0.1',
     notes: [
       "I stay on top properly now: over games and videos, through Show desktop, and on every virtual desktop you've got.",
