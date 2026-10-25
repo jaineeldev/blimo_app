@@ -42,11 +42,12 @@ jobs:
           codesign --verify --deep --strict --verbose=2 "$APP" 2>&1 | tee -a signature.txt
           echo "architectures: $(lipo -archs "$APP/Contents/MacOS/Blimo")" | tee -a signature.txt
 
-      # A first look before anyone tries it on a real Mac. It opens on its intro, as a new install would.
+      # A first look before anyone tries it on a real Mac. Opened the way double-clicking it does (so the
+      # menu bar app setup applies: no Dock icon), on its intro, as a new install would.
       - name: Open it and take screenshots
         continue-on-error: true
         run: |
-          "${{ steps.app.outputs.app }}/Contents/MacOS/Blimo" > app.log 2>&1 &
+          open --stdout "$PWD/app.log" --stderr "$PWD/app.log" "${{ steps.app.outputs.app }}"
           sleep 15
           screencapture -x shot-1.png
           sleep 8

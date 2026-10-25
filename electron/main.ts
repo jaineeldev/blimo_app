@@ -83,8 +83,11 @@ function createWindow() {
   stayOnTop(win)
 
   // On a Mac it's on every desktop, but not on the spaces full-screen apps get to themselves, which is
-  // how it steps aside for them there. (This also keeps it out of the Dock, as a menu bar app.)
-  if (process.platform === 'darwin') win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false })
+  // how it steps aside for them there. Left to itself, Electron makes the app a regular one here, with a
+  // Dock icon and a menu bar of its own; it's a menu bar app from launch (LSUIElement), so that's skipped.
+  if (process.platform === 'darwin') {
+    win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false, skipTransformProcessType: true })
+  }
 
   // With no taskbar button there would be no way to get it back, so it never stays minimised
   // (by "minimise all", say).
