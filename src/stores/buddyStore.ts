@@ -28,6 +28,12 @@ export interface BuddySettings {
   reactToMedia: boolean
   /** Fades out of the way while a full-screen app or game is on its screen. */
   stepAside: boolean
+  /** Shows how busy your computer is (CPU, memory, GPU) while you hover over it. */
+  showStats: boolean
+  /** Bops in time with the music, listening to it for the beat. Off until you switch it on. */
+  bopToBeat: boolean
+  /** Shows the song that's playing while you hover, reading its title and artist. Off until you switch it on. */
+  showSong: boolean
   /** Whether the first-run intro has been finished or skipped. */
   onboarded: boolean
   /** The intro step you'd reached, so a restart picks up there instead of starting over. */
@@ -70,6 +76,10 @@ interface BuddyStore extends BuddySettings {
   media: MediaKind | null
   /** The middle of the video's window, relative to the buddy's window, so it can watch along. */
   videoAt: { x: number; y: number } | null
+  /** The music's beat, while `bopToBeat` is on and it can hear one. */
+  beat: Beat | null
+  /** The song that's playing, while `showSong` is on. */
+  song: Song | null
   /** Faded out for a full-screen app. */
   aside: boolean
   update: (settings: Partial<BuddySettings>) => void
@@ -112,6 +122,18 @@ const LOWERCASE_DEFAULT_NAME = 'sora'
 let reactionTimer = 0
 let chatterId = 0
 
+/**
+ * The helper sends the beat every second. One within a hair of the tempo and a few ms of the timing it
+ * already has changes nothing, so it's kept and the buddy isn't redrawn for it; small drift adds up
+ * until it isn't.
+ */
+function sameBeat(a: Beat | null, b: Beat | null): boolean {
+  if (!a || !b) return a === b
+  const period = 60_000 / a.bpm
+  const off = (((b.at - a.at) % period) + period) % period
+  return Math.abs(a.bpm - b.bpm) < 0.3 && Math.min(off, period - off) < 12
+}
+
 /** What the buddy is actually showing: a reaction, else its ambient mood over idle, else its set mood. */
 export function shownMood(s: Pick<BuddyStore, 'reaction' | 'ambient' | 'state'>): BuddyState {
   return s.reaction ?? (s.state === 'idle' ? s.ambient : null) ?? s.state
@@ -129,6 +151,9 @@ export const useBuddyStore = create<BuddyStore>()(
       quiet: false,
       reactToMedia: true,
       stepAside: true,
+      showStats: true,
+      bopToBeat: false,
+      showSong: false,
       onboarded: false,
       introStep: null,
       lastVersion: null,
@@ -150,6 +175,8 @@ export const useBuddyStore = create<BuddyStore>()(
       updateBusy: false,
       media: null,
       videoAt: null,
+      beat: null,
+      song: null,
       aside: false,
       update: (settings) => set(settings),
       setName: (name) => set({ name }),
@@ -186,7 +213,14 @@ export const useBuddyStore = create<BuddyStore>()(
       // Update news always gets the floor.
       setUpdateBusy: (busy) => set(busy ? { updateBusy: true, chatter: null } : { updateBusy: false }),
       markMilestone: (id) => set((s) => (s.milestones.includes(id) ? {} : { milestones: [...s.milestones, id] })),
-      setMedia: ({ playing, lookAt }) => set({ media: playing, videoAt: lookAt }),
+      setMedia: ({ playing, lookAt, beat, song }) =>
+        set((s) => ({
+          media: playing,
+          videoAt: lookAt,
+          beat: sameBeat(s.beat, beat) ? s.beat : beat,
+          // The same song arrives every time anything else changes; keeping it saves a redraw.
+          song: song && s.song && song.title === s.song.title && song.artist === s.song.artist ? s.song : song,
+        })),
       setAside: (aside) => set({ aside }),
     }),
     {
@@ -212,6 +246,9 @@ export const useBuddyStore = create<BuddyStore>()(
         quiet: s.quiet,
         reactToMedia: s.reactToMedia,
         stepAside: s.stepAside,
+        showStats: s.showStats,
+        bopToBeat: s.bopToBeat,
+        showSong: s.showSong,
         onboarded: s.onboarded,
         introStep: s.introStep,
         lastVersion: s.lastVersion,

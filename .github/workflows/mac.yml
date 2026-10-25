@@ -1,0 +1,72 @@
+# Builds the Mac version on GitHub's free Macs, checks its signature, opens it and takes screenshots.
+# Run it from the Actions tab (Mac build → Run workflow). When it finishes, the run page has two downloads:
+#   Blimo-Mac          the dmg, zip, blockmaps and latest-mac.yml to attach to a release
+#   Mac screenshots    what it looked like once open, plus its signature check and log
+name: Mac build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  mac:
+    # Apple Silicon, macOS 15. (GitHub stops supporting its macOS 14 machines in November 2026.)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # The same build as on Windows; the helper step skips itself on a Mac.
+      - name: Build
+        run: npm run build
+
+      - name: Find the app
+        id: app
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "dir=release/$VERSION" >> "$GITHUB_OUTPUT"
+          echo "app=release/$VERSION/mac-universal/Blimo.app" >> "$GITHUB_OUTPUT"
+          ls -la "release/$VERSION"
+
+      # Ad-hoc signed (no Apple certificate), and one app for both Apple Silicon and Intel.
+      - name: Check the signature
+        run: |
+          APP="${{ steps.app.outputs.app }}"
+          codesign -dv --verbose=2 "$APP" 2>&1 | tee signature.txt
+          codesign --verify --deep --strict --verbose=2 "$APP" 2>&1 | tee -a signature.txt
+          echo "architectures: $(lipo -archs "$APP/Contents/MacOS/Blimo")" | tee -a signature.txt
+
+      # A first look before anyone tries it on a real Mac. It opens on its intro, as a new install would.
+      - name: Open it and take screenshots
+        continue-on-error: true
+        run: |
+          "${{ steps.app.outputs.app }}/Contents/MacOS/Blimo" > app.log 2>&1 &
+          sleep 15
+          screencapture -x shot-1.png
+          sleep 8
+          screencapture -x shot-2.png
+          pkill -f "Blimo.app" || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Blimo-Mac
+          path: |
+            ${{ steps.app.outputs.dir }}/*.dmg
+            ${{ steps.app.outputs.dir }}/*.zip
+            ${{ steps.app.outputs.dir }}/*.blockmap
+            ${{ steps.app.outputs.dir }}/latest-mac.yml
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Mac screenshots
+          path: |
+            shot-*.png
+            signature.txt
+            app.log

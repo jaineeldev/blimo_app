@@ -6,6 +6,7 @@ import { startCursorFeed } from './cursor'
 import { registerWindowControls, stayOnTop } from './interaction'
 import { registerActivity } from './activity'
 import { startMediaWatch } from './media'
+import { startStats } from './stats'
 import { startUpdates } from './updater'
 import { keepOnScreen, savedPosition } from './windowState'
 
@@ -31,7 +32,10 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 
 let win: BrowserWindow | null
 
-/** Matches `appId` in electron-builder.json5, so Windows treats the running app and its Start menu shortcut as one. */
+/**
+ * Matches `appId` in electron-builder.json5, so Windows treats the running app and its Start menu shortcut
+ * as one. It keeps the app's old name (DesktopBuddy, before 1.2), so earlier installs update in place.
+ */
 const APP_ID = 'com.jaineel.desktopbuddy'
 if (process.platform === 'win32') app.setAppUserModelId(APP_ID)
 
@@ -62,9 +66,10 @@ function createWindow() {
     ...savedPosition(WINDOW_SIZE),
     resizable: false,
     transparent: true,
-    // A tool window, like a desktop widget: no taskbar button to minimise it by accident, out of Alt+Tab,
-    // still there after Show desktop (Win+D), and on every virtual desktop rather than just the first.
-    type: 'toolbar',
+    // On Windows, a tool window, like a desktop widget: no taskbar button to minimise it by accident, out
+    // of Alt+Tab, still there after Show desktop (Win+D), and on every virtual desktop rather than just
+    // the first. On a Mac, a plain borderless window without the shadow Macs give windows.
+    ...(process.platform === 'darwin' ? { hasShadow: false } : { type: 'toolbar' }),
     minimizable: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
@@ -76,6 +81,10 @@ function createWindow() {
   // Not the constructor's `alwaysOnTop`, which uses the level that tucks it under the taskbar.
   // The renderer then applies your own setting.
   stayOnTop(win)
+
+  // On a Mac it's on every desktop, but not on the spaces full-screen apps get to themselves, which is
+  // how it steps aside for them there. (This also keeps it out of the Dock, as a menu bar app.)
+  if (process.platform === 'darwin') win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false })
 
   // With no taskbar button there would be no way to get it back, so it never stays minimised
   // (by "minimise all", say).
@@ -99,7 +108,7 @@ function createWindow() {
   createTray(win, startUpdates(win))
   startCursorFeed(win)
   keepOnScreen(win)
-  startMediaWatch(win)
+  startStats(win, startMediaWatch(win))
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -120,8 +129,24 @@ app.on('activate', () => {
   }
 })
 
+/**
+ * Before 1.2 the app was called DesktopBuddy, and starting with Windows was set up for DesktopBuddy.exe,
+ * which updating to Blimo replaces. If it was on, it's set up again for this one, so it stays on.
+ */
+function carryOverStartWithWindows() {
+  if (process.platform !== 'win32' || !app.isPackaged) return
+  const { openAtLogin, launchItems } = app.getLoginItemSettings()
+  if (!openAtLogin && launchItems.some((item) => item.enabled && /DesktopBuddy\.exe"?$/i.test(item.path))) {
+    app.setLoginItemSettings({ openAtLogin: true })
+  }
+}
+
 app.whenReady().then(() => {
   if (!isFirstInstance) return
+  carryOverStartWithWindows()
+  // A menu bar app on a Mac, with no Dock icon (the installed app is set up that way from launch,
+  // through LSUIElement in electron-builder.json5; this covers a development copy).
+  app.dock?.hide()
   registerWindowControls()
   registerActivity()
   createWindow()

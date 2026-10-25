@@ -6,6 +6,7 @@ import { generateLook } from './components/Buddy/blob/generate'
 import { randomBuddyName } from './components/Buddy/names'
 import { isSecretName } from './components/Buddy/secretNames'
 import { Chatter } from './components/Chatter/Chatter'
+import { StatHUD } from './components/StatHUD/StatHUD'
 import { Onboarding } from './components/Onboarding/Onboarding'
 import { SettingsPanel } from './components/SettingsPanel/SettingsPanel'
 import { UpdateBubble } from './components/UpdateBubble/UpdateBubble'
@@ -37,7 +38,12 @@ function App() {
     peek,
     reactToMedia,
     stepAside,
+    showStats,
+    bopToBeat,
+    showSong,
     media,
+    beat,
+    song,
     videoAt,
     asleep,
     aside,
@@ -58,7 +64,12 @@ function App() {
       peek: s.peek,
       reactToMedia: s.reactToMedia,
       stepAside: s.stepAside,
+      showStats: s.showStats,
+      bopToBeat: s.bopToBeat,
+      showSong: s.showSong,
       media: s.media,
+      beat: s.beat,
+      song: s.song,
       videoAt: s.videoAt,
       asleep: s.ambient === 'sleepy',
       aside: s.aside,
@@ -131,8 +142,8 @@ function App() {
   }, [alwaysOnTop])
 
   useEffect(() => {
-    window.buddy?.setMediaOptions({ react: reactToMedia, stepAside })
-  }, [reactToMedia, stepAside])
+    window.buddy?.setMediaOptions({ react: reactToMedia, stepAside, stats: showStats, beat: bopToBeat, song: showSong })
+  }, [reactToMedia, stepAside, showStats, bopToBeat, showSong])
 
   const introDelay = Date.now() - launchedAt.current < 3_000 ? INTRO_DELAY_AT_LAUNCH_MS : INTRO_DELAY_REPLAY_MS
 
@@ -154,6 +165,7 @@ function App() {
           sparkle={sparkle}
           // Bops to music while awake, except while held, so it doesn't fight the carry swing.
           groove={media === 'music' && !asleep && !pressed}
+          beat={beat}
           // Watches the video, unless you're hovering over it, when it looks at you. Popcorn either way.
           lookAt={media === 'video' && !hovered ? videoAt : null}
           snacking={media === 'video'}
@@ -162,6 +174,8 @@ function App() {
       {!onboarded && <Onboarding startDelay={introDelay} />}
       <UpdateBubble />
       <Chatter />
+      {/* Not while the panel or what's new card is open, or while you're holding the buddy. */}
+      <StatHUD hovered={hovered && !panelOpen && !whatsNew && !pressed} stats={showStats} song={song} size={size} peek={peek} />
       <AnimatePresence>{panelOpen && <SettingsPanel key="settings" />}</AnimatePresence>
       <AnimatePresence>{whatsNew && <WhatsNew key="whats-new" />}</AnimatePresence>
     </div>

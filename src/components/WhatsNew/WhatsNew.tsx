@@ -8,17 +8,20 @@ import '../SettingsPanel/SettingsPanel.css'
 import './WhatsNew.css'
 
 const CARD_WIDTH = 268
+const HAS_HELPER = window.buddy?.platform === 'win32'
 /** Roughly how tall the card draws for a given number of notes (most wrap to two or three lines), so it can be centred on the buddy. */
 const cardHeight = (notes: number) => 120 + notes * 62
 
 /** A card beside the buddy listing what changed in a version, in the buddy's own words. */
 export function WhatsNew() {
-  const { version, size, screenSpace } = useBuddyStore(
-    useShallow((s) => ({ version: s.whatsNew, size: s.size, screenSpace: s.screenSpace })),
+  const { version, size, screenSpace, bopToBeat } = useBuddyStore(
+    useShallow((s) => ({ version: s.whatsNew, size: s.size, screenSpace: s.screenSpace, bopToBeat: s.bopToBeat })),
   )
   const { closeWhatsNew } = useBuddyStore.getState()
   // Without notes for this exact version (a development build, say), show the newest ones.
   const entry = (version && notesFor(version)) || WHATS_NEW[0]
+  // Bopping to the beat needs the Windows helper, and is offered until it's on.
+  const offerBeat = entry.offer === 'bopToBeat' && HAS_HELPER && !bopToBeat
   // The side is picked once on open, like the customise panel.
   const [side] = useState(() => placePanel(size, screenSpace, CARD_WIDTH, cardHeight(entry.notes.length)).side)
   const place = placePanel(size, screenSpace, CARD_WIDTH, cardHeight(entry.notes.length), side)
@@ -66,6 +69,19 @@ export function WhatsNew() {
         ))}
       </ul>
       <footer className="whats-new-foot">
+        {offerBeat && (
+          <button
+            type="button"
+            className="whats-new-offer"
+            onClick={() => {
+              const { update, react } = useBuddyStore.getState()
+              update({ bopToBeat: true, reactToMedia: true })
+              react('excited', 1_400)
+            }}
+          >
+            Bop to the beat
+          </button>
+        )}
         <button type="button" className="whats-new-done" onClick={closeWhatsNew} autoFocus>
           Got it
         </button>

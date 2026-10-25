@@ -99,6 +99,25 @@ const CLICK: Record<BuddyState, Line[]> = {
     "Whoa. Everything's wobbly.",
     'Is the desktop meant to tilt like that?',
   ],
+  excited: [
+    "Ooh ooh ooh, what's happening?",
+    "I can't sit still!",
+    'This is the best!',
+    "Let's go!",
+    'Something good is coming. I can feel it.',
+  ],
+  shy: ['Oh! Um. Hi.', "You're looking at me, aren't you?", "I wasn't staring. Okay, I was.", 'Hehe, stop it.', "I'm just a bit shy, that's all."],
+  proud: ['Nailed it.', "I'm doing great, honestly.", 'Look at me go.', 'Pretty impressive, right?', "I'd give myself a gold star."],
+  scared: ['Eek! Is it gone?', "I'm not scared. You're scared.", 'Was that a noise?', "I'll just hide here for a sec.", 'Hold me. Metaphorically.'],
+  content: ['Mm, this is nice.', "Life's pretty good right now.", "I'm all cosy.", 'No complaints here.', 'Just enjoying the moment.'],
+  thinking: ['Hmm, let me think.', 'Big thoughts happening.', "I'm pondering.", "Wait, I've almost got it.", 'What if... no. Hmm.'],
+  stuffed: [
+    'Oof, too full to move.',
+    "Careful, don't squish me!",
+    'So. Much. Stuff.',
+    'Maybe close a tab or two?',
+    "I'll just sit here and digest.",
+  ],
   watching: [
     "Shh, it's getting good.",
     'Want some popcorn?',
@@ -173,6 +192,24 @@ const LINES = {
     'No way.',
     'Okay, just one more.',
   ],
+  /** The computer has been working flat out for a while. */
+  busy: [
+    "Your computer's working really hard!",
+    'Phew, lots going on in here.',
+    "I'll hold still while it catches up.",
+    'Is it warm in here, or is that your CPU?',
+  ],
+  /** And it's calmed down again. */
+  calm: ["Phew, that's better.", 'Ahh, things have calmed down.', 'Back to normal. Nice.'],
+  /** The memory has been nearly full for a while. */
+  full: [
+    "Oof. I'm so full of stuff right now.",
+    "Your memory's packed! Maybe close a few things?",
+    "I couldn't fit another byte.",
+    'Is it crowded in here, or is it just me?',
+  ],
+  /** And there's room again. */
+  roomy: ['Ahh, room to breathe again.', 'Much better. I can think again.', 'Phew, space at last.'],
   /** Back after stepping aside for something full screen. */
   returned: [
     'Back! What did I miss?',

@@ -1,21 +1,22 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/dark/buddies.gif">
-    <img src="docs/light/buddies.gif" alt="Nine different DesktopBuddy creatures breathing and blinking, with Sora, the cyan default buddy, in the middle. Sora falls in love, with heart eyes and floating hearts, then the others take turns to wink, tilt their heads, look surprised, get dizzy and look confused, while the rest turn to look." width="100%">
+    <img src="docs/light/buddies.gif" alt="Nine different Blimo buddies breathing and blinking, with Sora, the cyan default buddy, in the middle. Sora falls in love, with heart eyes and floating hearts, then the others take turns to wink, tilt their heads, look surprised, get dizzy and look confused, while the rest turn to look." width="100%">
   </picture>
 </p>
 
-<h1 align="center">DesktopBuddy</h1>
+<h1 align="center">Blimo</h1>
 
 <p align="center">
   <strong>A tiny creature that lives on your desktop.</strong><br>
-  It watches your cursor, gets sleepy, gets grumpy, and looks like no one else's.
+  It watches your cursor, gets sleepy, gets grumpy, and looks like no one else's.<br>
+  <sub>Called DesktopBuddy until version 1.2.</sub>
 </p>
 
 <p align="center">
-  <img alt="Platform: Windows" src="https://img.shields.io/badge/platform-Windows-0078D6">
-  <a href="https://github.com/jaineeldev/desktop_buddy/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/jaineeldev/desktop_buddy?label=download&color=3fb950"></a>
-  <a href="https://jaineel.dev/desktopbuddy"><img alt="Website: jaineel.dev/desktopbuddy" src="https://img.shields.io/badge/website-jaineel.dev%2Fdesktopbuddy-00d5ee"></a>
+  <img alt="Platform: Windows and macOS" src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS-0078D6">
+  <a href="https://github.com/jaineeldev/blimo_app/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/jaineeldev/blimo_app?label=download&color=3fb950"></a>
+  <a href="https://jaineel.dev/blimo"><img alt="Website: jaineel.dev/blimo" src="https://img.shields.io/badge/website-jaineel.dev%2Fblimo-00d5ee"></a>
   <img alt="Built with Electron" src="https://img.shields.io/badge/built%20with-Electron-47848F">
   <img alt="Made with AI assistance" src="https://img.shields.io/badge/made%20with-AI%20assistance-8A63D2">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
@@ -32,7 +33,7 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/dark/moods.gif">
-    <img src="docs/light/moods.gif" alt="Sora, the default buddy, in all fifteen moods, each one breathing and blinking: idle, happy, sleepy, stressed, angry, bored, surprised, sad, curious, confused, love, wink, focused, smug and dizzy" width="720">
+    <img src="docs/light/moods.gif" alt="Sora, the default buddy, in all twenty-one moods, each one breathing and blinking: idle, happy, sleepy, stressed, angry, bored, surprised, sad, curious, confused, love, wink, focused, smug, dizzy, excited, shy, proud, scared, content and thinking" width="720">
   </picture>
 </p>
 
@@ -44,7 +45,7 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 
 **Always watching.** Its eyes follow your cursor anywhere on the screen, up and down as well as side to side, and its body leans in a beat later, like it's turning to look. Leave the mouse alone and it starts looking around by itself.
 
-**Moods you can read.** Fifteen of them, from happy, sad and sleepy to curious, confused, smug and dizzy, each with its own face and body language. An angry buddy flushes red and trembles, a sad one loses its colour, and one in love gets heart eyes as little hearts float up around it.
+**Moods you can read.** Twenty-one of them, from happy, sad and sleepy to curious, smug, shy and proud, each with its own face and body language. An angry buddy flushes red and trembles, a scared one cowers and goes pale, and one in love gets heart eyes as little hearts float up around it. It gets excited when you come back, goes shy if you look at it too long, and is proud of its milestones.
 
 **It reacts to you.**
 
@@ -60,12 +61,12 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 - **It notices your day.** It perks up when your cursor arrives, gets bored after 2 minutes alone and dozes off after 5, with little z's floating up. Typing counts as being around. It says hello for the time of day, welcome back after a break, and might suggest bed after midnight. On a laptop it feels the battery: drained when it's low, perky when you plug in.
 - **It talks.** Every so often it says something in a speech bubble: a comment when you click it, a word about a good belly rub, a complaint when you've made it dizzy. What it says when you click depends on its mood, and it works through everything it could say before it repeats itself. It remembers little milestones like your 100th pet and a week together, and there are a few secret names to find. Prefer it quiet? Turn on quiet mode.
 
-**Into your music and shows.** When music plays, it bops along with little notes floating up. When a video plays, it grabs a bucket of popcorn, turns to watch with wide eyes, munches away and reacts now and then. And when a game or video goes full screen on its screen, it fades out of the way and comes back when you're done. It works with Spotify, your browser and most players, going by the same media info as the Windows volume pop-up. It never listens to your audio.
+**Into your music and shows.** When music plays, it bops along with little notes floating up. When a video plays, it grabs a bucket of popcorn, turns to watch with wide eyes, munches away and reacts now and then. And when a game or video goes full screen on its screen, it fades out of the way and comes back when you're done. Turn on **bop to the beat** and every bop lands in time with the music, and turn on **show what's playing** to see the song when you hover over it. It works with Spotify, your browser and most players, going by the same media info as the Windows volume pop-up. It doesn't listen to your audio unless you turn on bop to the beat, and it only reads the song's name if you turn on show what's playing. Music and movie night are on Windows for now.
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/dark/music.gif">
-    <img src="docs/light/music.gif" alt="A little now-playing card switches to playing. Sora looks over, smiles, says &quot;Ooh, I like this one.&quot; and bops along to the beat with gold music notes floating up, the card's bars bouncing in time, until the music stops." width="400">
+    <img src="docs/light/music.gif" alt="A little now-playing card switches to playing. Sora looks over, smiles, says &quot;Ooh, I like this one.&quot; and bops along to the beat with gold music notes floating up, the card's bars bouncing in time. The cursor hovers over it and two pills appear underneath: the stats, and the song, Veridis Quo by Daft Punk. Then the music stops." width="400">
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/dark/watching.gif">
@@ -73,7 +74,16 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
   </picture>
 </p>
 
-**Always on top, never in the way.** It stays above your other windows and follows you to every virtual desktop. When a game or video goes full screen on its screen, it steps aside until you're done. Rather keep it there? Turn off **step aside for full screen** and it stays on top of those too. (A game in exclusive full-screen mode draws over everything, so set it to borderless or windowed to keep your buddy in view.) Only the buddy itself catches your mouse. The space around it lets clicks straight through to whatever is underneath. Press **Ctrl+Alt+B** to hide it or bring it back, handy when you're sharing your screen.
+**Knows how your PC is doing.** Hover over it and a little pill underneath shows how hard your computer is working: the processor, the memory and, on Windows, the graphics card. When your PC works flat out for a while it gets stressed, and when the memory is nearly full it feels stuffed. It relaxes, with a sigh of relief, when things calm down. Rather not see the numbers? Turn off **show stats on hover**.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/dark/stats.gif">
+    <img src="docs/light/stats.gif" alt="The cursor hovers over Sora and a pill underneath shows CPU 23%, RAM 61% and GPU 8%. The CPU jumps to 97% and Sora looks stressed, saying &quot;Your computer's working really hard!&quot;. The memory fills to 94% and it puffs up, stuffed, saying &quot;Oof. I'm so full of stuff right now.&quot;. Then the numbers drop, it relaxes and says &quot;Ahh, room to breathe again.&quot;" width="400">
+  </picture>
+</p>
+
+**Always on top, never in the way.** It stays above your other windows and follows you to every virtual desktop. When a game or video goes full screen on its screen, it steps aside until you're done. Rather keep it there? Turn off **step aside for full screen** and it stays on top of those too. (A game in exclusive full-screen mode draws over everything, so set it to borderless or windowed to keep your buddy in view.) Only the buddy itself catches your mouse. The space around it lets clicks straight through to whatever is underneath. Press **Ctrl+Alt+B** (**Option+Command+B** on a Mac) to hide it or bring it back, handy when you're sharing your screen. On a Mac, full-screen apps get their own space, and it stays out of them.
 
 **Stays where you put it.** It remembers where you left it between launches, and hops back onto a screen if the one it was on disappears. Push it past the edge of your screen and it tucks in halfway, leaning out to peek at you. It only does that when you drag it there; it never moves on its own.
 
@@ -84,11 +94,11 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
   </picture>
 </p>
 
-**A warm welcome.** The first time you open DesktopBuddy, your new buddy introduces itself in speech bubbles. You name it (its face changes as you type), then try petting it, carrying it and giving it a new look. You can skip it, or replay it any time from the tray.
+**A warm welcome.** The first time you open Blimo, your new buddy introduces itself in speech bubbles. You name it (its face changes as you type), then try petting it, carrying it and giving it a new look. You can skip it, or replay it any time from the tray.
 
-**Lives in your tray.** The tray icon is your own buddy, and it changes whenever your buddy does.
+**Lives in your tray.** The tray icon (in the menu bar on a Mac) is your own buddy, and it changes whenever your buddy does.
 
-**Keeps itself up to date.** New versions download in the background, with a little progress ring floating over your buddy's head, and it tells you in a speech bubble when one is ready. Restart it there and then, or it updates the next time it closes. Either way, it pops back up on the new version, tells you so, and can show you what's new. Want to check right now? Press **Check for updates** at the bottom of the panel.
+**Keeps itself up to date.** New versions download in the background, with a little progress ring floating over your buddy's head, and it tells you in a speech bubble when one is ready. Restart it there and then, or it updates the next time it closes. Either way, it pops back up on the new version, tells you so, and can show you what's new. Want to check right now? Press **Check for updates** at the bottom of the panel. On a Mac it doesn't update itself yet: it tells you when there's a new version and takes you to the download.
 
 ## Make it yours
 
@@ -105,47 +115,62 @@ Right-click your buddy to open its panel:
 - Pick a body shape, including six hand-drawn extras: mochi, bean, ghost, kitty, sprout and slime.
 - Choose its eyes (dots, domes, squares, capsules or visor) and fine-tune them: size, width, spacing, squareness, tilt, height and how far left or right they sit.
 - Set its colour and tone, its size and its opacity.
-- Turn cursor-following, always-on-top, start with Windows, bopping to music and watching videos, stepping aside for full screen, and quiet mode on or off. Quiet mode stops the chatter, but your buddy still tells you about updates.
+- Turn cursor-following, always-on-top, stats on hover, start with Windows (open at login on a Mac), bopping to music and watching videos, bopping to the beat, showing what's playing, stepping aside for full screen, and quiet mode on or off. Quiet mode stops the chatter, but your buddy still tells you about updates.
 - Check for updates, hide it or quit it, from the buttons at the bottom.
 
 Everything saves automatically, and your buddy is waiting just as you left it next time.
 
 ## Download
 
-DesktopBuddy is free, for **Windows 10 and 11**.
+Blimo is free, for **Windows 10 and 11** and **Macs** (Apple Silicon and Intel).
 
-1. Download it from [jaineel.dev/desktopbuddy](https://jaineel.dev/desktopbuddy), or grab the `DesktopBuddy-Windows-…-Setup.exe` file from the [latest release](https://github.com/jaineeldev/desktop_buddy/releases/latest).
+**On Windows**
+
+1. Download it from [jaineel.dev/blimo](https://jaineel.dev/blimo), or grab the `Blimo-Windows-…-Setup.exe` file from the [latest release](https://github.com/jaineeldev/blimo_app/releases/latest).
 2. Run it. The installer isn't code-signed yet, so Windows SmartScreen may show "Windows protected your PC". Click **More info**, then **Run anyway**.
 3. Your new buddy wakes up and introduces itself.
 
-To close it, right-click your buddy and press **Quit DesktopBuddy** at the bottom of the panel, or right-click the tray icon and choose **Quit**.
+**On a Mac**
 
-Want it there every time you log in? Right-click your buddy and turn on **start with Windows**, or tick **Start with Windows** in the tray menu.
+1. Download it from [jaineel.dev/blimo](https://jaineel.dev/blimo), or grab the `Blimo-Mac-….dmg` file from the [latest release](https://github.com/jaineeldev/blimo_app/releases/latest).
+2. Open it and drag **Blimo** into **Applications**.
+3. Open Blimo. It isn't signed by Apple yet, so macOS stops it the first time. Open **System Settings**, then **Privacy & Security**, scroll down and click **Open Anyway**. You only do this once.
+4. Your new buddy wakes up and introduces itself. It lives in the menu bar, with no Dock icon.
 
-You only need to install it once. After that it keeps itself up to date, and your buddy tells you when a new version is ready. The one exception: if you installed the very first version (v0.1.0), download the newest one by hand once, because that version can't update itself.
+The Mac version is brand new, so if anything looks off, please [open an issue](https://github.com/jaineeldev/blimo_app/issues).
 
-**What it can and can't access.** DesktopBuddy needs no admin rights and asks for no special permissions.
+To close it, right-click your buddy and press **Quit Blimo** at the bottom of the panel, or right-click the tray icon and choose **Quit**.
+
+Want it there every time you log in? Right-click your buddy and turn on **start with Windows** (**open at login** on a Mac), or tick it in the tray menu.
+
+You only need to install it once. On Windows it keeps itself up to date after that, and your buddy tells you when a new version is ready. The one exception: if you installed the very first version (v0.1.0), download the newest one by hand once, because that version can't update itself.
+
+**What it can and can't access.** Blimo needs no admin rights and asks for no special permissions.
 
 - It reads where your mouse pointer is, so its eyes can follow it.
 - It checks how long it's been since you last used your keyboard or mouse, so it knows when you're away. It never sees what you type.
 - On a laptop, it reads the battery level and whether it's charging.
-- It checks whether music or a video is playing, and in which app, from Windows' media info (what the volume pop-up shows). It never listens to the audio or reads the name of the song or show.
+- It checks whether music or a video is playing, and in which app, from Windows' media info (what the volume pop-up shows). It never reads the name of a show, and only reads the song's title and artist if you turn on show what's playing (it starts off), to show them when you hover.
+- Only if you turn on bop to the beat (it starts off), it listens to the sound your PC is playing while music plays, to find the beat. It hears what's going to your speakers or headphones, never your microphone, and the sound is never recorded, kept or sent anywhere.
+- For the stats on hover, it reads how busy your CPU, memory and graphics card are.
 - Browsers call everything music, so to tell a video from a song it checks your browser windows' titles for a video site, such as YouTube. It also checks whether the window in front is full screen, so it can step aside.
-- Those last two are done by a small helper, `DesktopBuddyHelper.exe`, that runs alongside DesktopBuddy and closes with it. It keeps nothing and sends nothing anywhere. Turn off both options in the panel and it doesn't run at all.
+- The music, video, full-screen, beat, song and graphics card checks are done by a small helper, `BlimoHelper.exe`, that runs alongside Blimo and closes with it. It keeps nothing and sends nothing anywhere. Turn off the music, full screen and stats options in the panel and it doesn't run at all.
 - It saves your buddy's name, settings and the milestones it remembers on your PC.
 - It connects to GitHub, and nothing else, to check for new versions. It doesn't collect or send any data about you.
-- It starts with Windows only if you turn that option on.
+- On a Mac there's no helper, so it doesn't check music, videos or the graphics card.
+- It starts with Windows (or opens at login on a Mac) only if you turn that option on.
 - It doesn't use your camera, microphone, location, clipboard or files.
 
 The SmartScreen warning is there because the installer isn't code-signed yet, not because of anything the app does.
 
-Found a bug or have an idea? [Open an issue](https://github.com/jaineeldev/desktop_buddy/issues). Your feedback shapes what comes next.
+Found a bug or have an idea? [Open an issue](https://github.com/jaineeldev/blimo_app/issues). Your feedback shapes what comes next.
 
 ## Coming soon
 
-- **Knows your PC.** It reacts to your CPU and memory: stressed when your machine is working hard, sleepy when it's quiet. A small panel beside it shows CPU, RAM and the time.
+- **Little helpers.** A focus timer from the tray, and gentle reminders (off by default) to drink water, stretch or head to bed.
+- **Share your buddy.** A short code a friend can paste in to meet your buddy, looking just like yours.
 
-Windows comes first. Linux and macOS follow soon!
+Linux may follow one day.
 
 ## Maybe one day
 
@@ -156,17 +181,17 @@ These are ideas being explored, not promises. They aren't built yet, and they ma
 
 ## Made with AI help
 
-To be clear about how this app is made: AI has been used to help build DesktopBuddy from the start, and it still is. AI coding assistants, including Claude, help design the buddy, write small parts of code and assist in drafting such as docs this one. I am the only person in direct control of the project and decide what gets built then build it and  ship it.
+To be clear about how this app is made: AI has been used to help build Blimo from the start, and it still is. AI coding assistants, including Claude, help design the buddy, write small parts of code and assist in drafting such as docs this one. I am the only person in direct control of the project and decide what gets built then build it and  ship it.
 
 ## License
 
-The code is open source under the [MIT License](LICENSE): you're free to learn from it, change it and use it in your own projects, as long as you keep the copyright notice. The DesktopBuddy name and Sora, its mascot, aren't part of that, so please don't use them for your own apps.
+The code is open source under the [MIT License](LICENSE): you're free to learn from it, change it and use it in your own projects, as long as you keep the copyright notice. The Blimo name and Sora, its mascot, aren't part of that, so please don't use them for your own apps.
 
 ---
 
 ## 🛠️ Under the Hood
 
-Everything below is for developers and anyone curious about how DesktopBuddy is built. It's a hybrid stack: a modern web frontend for the buddy and its UI, and (planned) a C backend for low-level system access.
+Everything below is for developers and anyone curious about how Blimo is built. It's a hybrid stack: a modern web frontend for the buddy and its UI, and (planned) a C backend for low-level system access.
 
 ### How the faces work
 
@@ -196,7 +221,7 @@ To build the Windows installer:
 npm run build
 ```
 
-It ends up in `release/<version>/` as `DesktopBuddy-Windows-<version>-Setup.exe`, next to a `.blockmap` and `latest.yml`. Upload all three to a GitHub release: the installed app reads `latest.yml` to find new versions, and the blockmap lets it download only what changed.
+It ends up in `release/<version>/` as `Blimo-Windows-<version>-Setup.exe`, next to a `.blockmap` and `latest.yml`. Upload all three to a GitHub release: the installed app reads `latest.yml` to find new versions, and the blockmap lets it download only what changed.
 
 If the build stops with "Cannot create symbolic link", turn on Windows Developer Mode and run it again. One of electron-builder's downloads contains macOS links that Windows only lets you create in that mode.
 
@@ -217,7 +242,7 @@ If the build stops with "Cannot create symbolic link", turn on Windows Developer
 ### 📂 Project Structure
 
 ```
-desktop_buddy/
+blimo_app/
 ├── build/                   # App icon for the installer
 ├── electron/
 │   ├── main.ts              # Window creation, one-buddy-at-a-time lock
@@ -246,7 +271,7 @@ desktop_buddy/
 │   ├── dev/Gallery.tsx      # Face browser, opened with ?gallery
 │   ├── whatsNew.ts          # Release notes, in the buddy's voice
 │   └── App.tsx
-├── helper/                  # DesktopBuddyHelper.cs: what's playing, and whether something is full screen
+├── helper/                  # BlimoHelper.cs: what's playing, full screen and the GPU; BeatTracker.cs and Loopback.cs: the beat
 ├── scripts/                 # build-helper.mjs builds the helper with Windows' own C# compiler
 ├── native/                  # (planned) stats.c, stats.h, binding.gyp
 └── docs/                    # README artwork
@@ -254,7 +279,7 @@ desktop_buddy/
 
 ### 🗺️ Roadmap
 
-DesktopBuddy is built in public, one phase at a time. Ticked items have shipped; the rest is roughly in the order it'll happen.
+Blimo is built in public, one phase at a time. Ticked items have shipped; the rest is roughly in the order it'll happen.
 
 #### ✅ Shipped — v0.1 and v0.2
 > A buddy that lives on your desktop, looks like no one else's, and keeps itself up to date.
@@ -307,17 +332,22 @@ DesktopBuddy is built in public, one phase at a time. Ticked items have shipped;
 - [x] Time-of-day greetings (morning, afternoon, evening, late night), and welcome back after a break
 - [x] A pool of things to say for each mood, so it never sounds like a recording
 
-#### Next up — Knows your PC
-> Real C that reads system stats through the Windows API, and a buddy that reacts to them.
+#### ✅ Shipped — v1.2, a new name, and on Mac
+> DesktopBuddy became Blimo, came to the Mac, and learned how your PC is doing.
+
+- [x] A new name: DesktopBuddy is now Blimo
+- [x] A Mac version, free: universal (Apple Silicon and Intel), living in the menu bar
+- [x] Six new moods: excited, shy, proud, scared, content and thinking, each with its own things to say
+- [x] Stats on hover (CPU, memory and graphics card), stressed when your PC works flat out and stuffed when its memory is full, with things to say about it
+- [x] Bop to the beat: listens for your music's tempo and bops in time, off until you turn it on
+- [x] Show what's playing: the song and artist on hover, off until you turn it on
+
+#### Then — Real C under the hood
+> The stats already work. Next, the part that reads them gets rewritten in C, through the Windows API.
 
 - [ ] Set up `node-addon-api` in the project
 - [ ] Write `stats.c`: CPU usage via `GetSystemTimes` and RAM via `GlobalMemoryStatusEx`
-- [ ] Compile it to a `.node` native addon, called from `stats-bridge.ts` over IPC
-- [ ] A `useSystemStats` hook that polls every 2 seconds
-- [ ] `StatHUD`: a small panel beside the buddy with CPU, RAM and the time
-- [ ] Reacts to stats: stressed when your CPU is busy, sleepy when things are quiet
-- [ ] Comments on what your computer is up to
-- [ ] Stat toggles in the customise panel
+- [ ] Compile it to a `.node` native addon and read the stats through it
 
 #### Later — Little helpers and sharing
 > Ways it can help out, and ways to show it off.
@@ -328,7 +358,7 @@ DesktopBuddy is built in public, one phase at a time. Ticked items have shipped;
 - [x] Secret names that unlock a reaction of their own, and a sparkle
 - [x] Little milestones it remembers and mentions once: pets, belly rubs, anniversaries
 - [ ] A friend for your buddy: two buddies that notice and react to each other
-- [x] A landing page with the GIFs and a download button, at [jaineel.dev/desktopbuddy](https://jaineel.dev/desktopbuddy)
+- [x] A landing page with the GIFs and a download button, at [jaineel.dev/blimo](https://jaineel.dev/blimo)
 - [ ] Free code signing (for example through SignPath Foundation) to drop the SmartScreen warning, once the project qualifies
 
 #### Possible Future — AI Chat
@@ -340,13 +370,13 @@ DesktopBuddy is built in public, one phase at a time. Ticked items have shipped;
 - [ ] Keep API keys encrypted on your machine (Electron `safeStorage`), never exposed to the UI
 - [ ] Later: talking out loud, and tools like timers and reminders
 
-#### Stretch Goal — Cross-Platform
-> Not planned, but possible later.
+#### Stretch Goal — Linux
+> Not planned, but possible later. (macOS came in v1.2.)
 
 - [ ] Abstract stats module for Linux (`/proc/stat`, `/proc/meminfo`)
 - [ ] Handle `#ifdef _WIN32` / `#ifdef __linux__` in C code
-- [ ] Test tray behaviour on Linux and macOS
-- [ ] Package for Linux and macOS targets
+- [ ] Test tray behaviour on Linux
+- [ ] Package for Linux
 
 ### 📖 Resources
 

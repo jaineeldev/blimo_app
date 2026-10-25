@@ -5,8 +5,11 @@ import type { Updates } from './updater'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-/** Shows or hides the buddy from anywhere, for screen-sharing and presenting. */
+/** Shows or hides the buddy from anywhere, for screen-sharing and presenting: Ctrl+Alt+B, or ⌥⌘B on a Mac. */
 const TOGGLE_SHORTCUT = 'CommandOrControl+Alt+B'
+const IS_MAC = process.platform === 'darwin'
+/** How the shortcut reads in the panel, the way each system writes it. */
+const SHORTCUT_LABEL = IS_MAC ? '⌥⌘B' : 'Ctrl+Alt+B'
 
 /** The menu's update line, which follows the updater from checking through to ready. */
 function updateItem(updates: Updates): MenuItemConstructorOptions {
@@ -19,6 +22,8 @@ function updateItem(updates: Updates): MenuItemConstructorOptions {
       return { label: `Downloading ${state.version}…`, enabled: false }
     case 'ready':
       return { label: `Restart to update to ${state.version}`, click: () => updates.install() }
+    case 'available':
+      return { label: `Download ${state.version}…`, click: () => updates.install() }
     default:
       return { label: 'Check for updates', click: () => updates.check() }
   }
@@ -67,7 +72,7 @@ export function createTray(win: BrowserWindow, updates: Updates) {
       { type: 'separator' },
       {
         // Only the installed app can do this; in development it would register the dev copy of Electron.
-        label: app.isPackaged ? 'Start with Windows' : 'Start with Windows (installed app only)',
+        label: `${IS_MAC ? 'Open at login' : 'Start with Windows'}${app.isPackaged ? '' : ' (installed app only)'}`,
         type: 'checkbox',
         enabled: app.isPackaged,
         checked: app.isPackaged && app.getLoginItemSettings().openAtLogin,
@@ -75,16 +80,18 @@ export function createTray(win: BrowserWindow, updates: Updates) {
       },
       updateItem(updates),
       { type: 'separator' },
-      { label: 'Quit', click: () => app.quit() },
+      // Macs name the app in Quit.
+      { label: IS_MAC ? 'Quit Blimo' : 'Quit', click: () => app.quit() },
     ])
 
   const refresh = () => {
     if (!tray.isDestroyed()) tray.setContextMenu(menu())
   }
-  tray.setToolTip('DesktopBuddy')
+  tray.setToolTip('Blimo')
   refresh()
   updates.onChange(refresh)
-  tray.on('click', toggle)
+  // On a Mac, clicking a menu bar icon opens its menu, so a click there doesn't also hide the buddy.
+  if (!IS_MAC) tray.on('click', toggle)
 
   // The settings panel offers the same things, for anyone who never finds the tray icon
   // (Windows 11 tucks new ones away under the ^ arrow).
@@ -92,7 +99,7 @@ export function createTray(win: BrowserWindow, updates: Updates) {
   ipcMain.handle(
     'app:menu-state',
     (): MenuState => ({
-      hideShortcut: shortcut ? shortcut.replace('CommandOrControl', 'Ctrl') : null,
+      hideShortcut: shortcut ? SHORTCUT_LABEL : null,
       startWithWindows: app.isPackaged ? app.getLoginItemSettings().openAtLogin : null,
       canUpdate: updates.enabled,
       update: updates.state,

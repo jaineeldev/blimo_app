@@ -47,9 +47,10 @@ function shakeDetector(onShake: () => void) {
 /**
  * How high "always on top" sits. Electron's default level on Windows ('floating') keeps the window just
  * under the taskbar, tucking it back there every time the buddy is clicked; 'screen-saver' is plain
- * always-on-top, with nothing tying it to the taskbar.
+ * always-on-top, with nothing tying it to the taskbar. On a Mac, 'floating' is the usual level for
+ * things that hover over your windows, under menus and the Dock.
  */
-const ON_TOP_LEVEL = 'screen-saver'
+const ON_TOP_LEVEL = process.platform === 'darwin' ? 'floating' : 'screen-saver'
 
 /**
  * How often the buddy climbs back above always-on-top windows that have covered it since: games,
@@ -66,9 +67,13 @@ export function keepOnTop(win: BrowserWindow, onTop = onTopWanted) {
   if (!win.isDestroyed()) win.setAlwaysOnTop(onTop, ON_TOP_LEVEL)
 }
 
-/** Above everything from the start, and back on top whenever something covers it, while you want it there. */
+/**
+ * Above everything from the start, and back on top whenever something covers it, while you want it
+ * there. A Mac keeps a floating window above the rest by itself, so it only needs setting once.
+ */
 export function stayOnTop(win: BrowserWindow) {
   keepOnTop(win, true)
+  if (process.platform === 'darwin') return
   const timer = setInterval(() => {
     if (win.isDestroyed()) return clearInterval(timer)
     if (onTopWanted && win.isVisible() && !win.isMinimized()) keepOnTop(win)

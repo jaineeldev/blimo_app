@@ -201,10 +201,59 @@ export const EXPRESSIONS: Record<BuddyState, Expression> = {
     blink: false,
   },
 
+  // Big, bright open eyes with a smile in them, up on its toes and buzzing.
+  excited: {
+    pose: pose({ sx: 1.3, sy: 1.32, bend: 0.3, lift: 0.36, lock: 1 }, { bodyY: -2.4, squash: -0.08, shake: 0.35, gaze: 0.3 }),
+    rate: 0.5,
+    blink: false,
+  },
+
+  // Small eyes looking away and down, leaning in on itself. No blush: a flush muddies cool colours.
+  shy: {
+    pose: pose({ sx: 0.74, sy: 0.74, lift: -0.15, inward: 0.1, lock: 1 }, { lookX: -0.55, lookY: 0.55, bodyTilt: -7, bodyY: 0.8, squash: 0.04, gaze: 0.15 }),
+    rate: 1.3,
+    blink: true,
+  },
+
+  // Eyes calmly shut, chin up, standing tall.
+  proud: {
+    pose: pose({ sx: 1.6, sy: 0.3, bend: 0.25, lift: 0.32, lock: 1 }, { lookY: -0.45, bodyY: -1.5, squash: -0.06, bodyTilt: 4, gaze: 0 }),
+    rate: 1.2,
+    blink: false,
+  },
+
+  // Tall eyes set wide, cowering and trembling, the colour drained out.
+  scared: {
+    pose: pose({ sx: 0.76, sy: 1.45, lift: 0.15, inward: -0.12, lock: 1 }, { shake: 1.3, squash: 0.08, bodyY: 1.4, tint: 0.35, tintChroma: 0.015, gaze: 0.8 }),
+    rate: 0.45,
+    blink: true,
+  },
+
+  // A soft, half-closed smile, sinking in, breathing slowly.
+  content: {
+    pose: pose({ sx: 1.5, sy: 0.55, bend: 0.55, lift: -0.05, lock: 1 }, { bodyY: 0.6, squash: 0.03, gaze: 0.2 }),
+    rate: 1.6,
+    blink: false,
+  },
+
+  // Looking up and off to one side, one eye narrowed, head tilted.
+  thinking: {
+    pose: lopsided({ sy: 0.95, lift: 0.1, lock: 1 }, { sx: 1.1, sy: 0.55, lift: 0.25, lock: 1 }, { lookX: 0.55, lookY: -0.6, bodyTilt: 5, gaze: 0 }),
+    rate: 1.1,
+    blink: true,
+  },
+
   // Watching a video: bright, wide eyes on the screen, sitting up a little, quite taken with it.
   watching: {
     pose: pose({ sx: 1.12, sy: 1.22, lift: 0.18, lock: 1 }, { bodyY: -0.8, squash: -0.025 }),
     rate: 0.85,
+    blink: true,
+  },
+
+  // The memory nearly full: puffed out wide and low, small eyes pushed up, slow heavy breaths.
+  stuffed: {
+    pose: pose({ sx: 0.82, sy: 0.82, lift: 0.5, lock: 1 }, { squash: 0.24, bodyY: 1.6, lookY: 0.2, gaze: 0.2 }),
+    rate: 1.8,
     blink: true,
   },
 }

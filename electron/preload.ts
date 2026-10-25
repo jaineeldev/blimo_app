@@ -33,6 +33,7 @@ function subscribe<T>(channel: string, callback: (payload: T) => void) {
 }
 
 contextBridge.exposeInMainWorld('buddy', {
+  platform: process.platform,
   onCursor: (callback: (point: { x: number; y: number }) => void) => subscribe('cursor:move', callback),
   onNewFace: (callback: () => void) => subscribe('buddy:new-face', callback),
   onOpenPanel: (callback: () => void) => subscribe('buddy:open-panel', callback),
@@ -61,4 +62,6 @@ contextBridge.exposeInMainWorld('buddy', {
   onMedia: (callback: (media: MediaNow) => void) => subscribe('buddy:media', callback),
   onStepAside: (callback: (aside: boolean) => void) => subscribe('buddy:step-aside', callback),
   setMediaOptions: (options: MediaOptions) => ipcRenderer.send('media:options', options),
+  onStats: (callback: (stats: SystemStats) => void) => subscribe('buddy:stats', callback),
+  setStatsShowing: (showing: boolean) => ipcRenderer.send('stats:showing', showing),
 })

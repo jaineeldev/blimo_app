@@ -28,6 +28,10 @@ import './SettingsPanel.css'
 const PANEL_WIDTH = 288
 const PANEL_MAX_HEIGHT = 560
 
+/** Things that differ by system: a Mac says "open at login", and only Windows has the media helper. */
+const IS_MAC = window.buddy?.platform === 'darwin'
+const HAS_HELPER = window.buddy?.platform === 'win32'
+
 /** Ten hues spread around the wheel, each drawn in the buddy's current tone. */
 const HUES = [20, 50, 85, 130, 165, 200, 240, 275, 305, 340]
 
@@ -63,7 +67,7 @@ function countPins(look: LookOverrides): number {
 }
 
 export function SettingsPanel() {
-  const { name, look, size, opacity, followCursor, alwaysOnTop, quiet, reactToMedia, stepAside, state, screenSpace } = useBuddyStore(
+  const { name, look, size, opacity, followCursor, alwaysOnTop, quiet, reactToMedia, bopToBeat, showSong, stepAside, showStats, state, screenSpace } = useBuddyStore(
     useShallow((s) => ({
       name: s.name,
       look: s.look,
@@ -73,7 +77,10 @@ export function SettingsPanel() {
       alwaysOnTop: s.alwaysOnTop,
       quiet: s.quiet,
       reactToMedia: s.reactToMedia,
+      bopToBeat: s.bopToBeat,
+      showSong: s.showSong,
       stepAside: s.stepAside,
+      showStats: s.showStats,
       state: s.state,
       screenSpace: s.screenSpace,
     })),
@@ -292,15 +299,16 @@ export function SettingsPanel() {
               </Chip>
             ))}
           </div>
-          <p className="hint">Picked by hand for now, until system stats drive it.</p>
+          <p className="hint">On idle it reacts to you and your computer. Pick another mood to hold it there.</p>
         </Section>
 
         <Section title="behaviour">
           <Toggle label="eyes follow cursor" checked={followCursor} onChange={(v) => update({ followCursor: v })} />
           <Toggle label="always on top" checked={alwaysOnTop} onChange={(v) => update({ alwaysOnTop: v })} />
+          <Toggle label="show stats on hover" checked={showStats} onChange={(v) => update({ showStats: v })} />
           {menu && menu.startWithWindows !== null && (
             <Toggle
-              label="start with Windows"
+              label={IS_MAC ? 'open at login' : 'start with Windows'}
               checked={menu.startWithWindows}
               onChange={(v) => {
                 window.buddy?.setStartWithWindows(v)
@@ -308,17 +316,22 @@ export function SettingsPanel() {
               }}
             />
           )}
-          {/* The helper that notices these is part of the app, so a plain browser preview has neither. */}
-          {window.buddy && (
+          {/* Noticed by the Windows helper, so not on a Mac (where full-screen apps get their own space and it
+              stays off those anyway) or in a plain browser preview. */}
+          {HAS_HELPER && (
             <>
               <Toggle label="bop to music, watch videos" checked={reactToMedia} onChange={(v) => update({ reactToMedia: v })} />
+              {reactToMedia && <Toggle label="bop to the beat" checked={bopToBeat} onChange={(v) => update({ bopToBeat: v })} />}
+              {reactToMedia && <Toggle label="show what's playing" checked={showSong} onChange={(v) => update({ showSong: v })} />}
               <Toggle label="step aside for full screen" checked={stepAside} onChange={(v) => update({ stepAside: v })} />
             </>
           )}
           <Toggle label="quiet mode" checked={quiet} onChange={(v) => update({ quiet: v })} />
           <p className="hint">
-            Music and videos are noticed on your PC, and nothing about them is kept or sent. Quiet mode stops the
-            chatter; update news still shows.
+            {HAS_HELPER && 'Music and videos are noticed on your PC, and nothing about them is kept or sent. '}
+            {HAS_HELPER && reactToMedia && 'Bop to the beat listens to the music for its beat, and the sound is never kept. '}
+            {HAS_HELPER && reactToMedia && "Show what's playing reads the song's name, to show when you hover. "}
+            Quiet mode stops the chatter; update news still shows.
           </p>
         </Section>
       </div>
@@ -338,9 +351,9 @@ export function SettingsPanel() {
             {menu?.hideShortcut && <span className="foot-key">{menu.hideShortcut}</span>}
           </button>
           <button className="foot-btn" onClick={() => window.buddy?.quit()}>
-            <PowerIcon /> Quit DesktopBuddy
+            <PowerIcon /> Quit Blimo
           </button>
-          <p className="panel-about">{version && `DesktopBuddy v${version}`}</p>
+          <p className="panel-about">{version && `Blimo v${version}`}</p>
         </footer>
       )}
     </motion.div>

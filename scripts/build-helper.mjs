@@ -1,21 +1,25 @@
-// Builds helper/DesktopBuddyHelper.cs into helper/bin/DesktopBuddyHelper.exe with the C# compiler that
+// Builds the helper (helper/*.cs) into helper/bin/BlimoHelper.exe with the C# compiler that
 // comes with Windows (part of .NET Framework 4), so there's nothing to install. It links against the
 // media info descriptions Windows keeps in System32\WinMetadata. Skipped when the exe is already newer
-// than the source, and off Windows, where the app runs without the helper.
+// than every source file, and off Windows, where the app runs without the helper.
 import { execFileSync } from 'node:child_process'
-import { existsSync, mkdirSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
-const source = path.join(root, 'helper', 'DesktopBuddyHelper.cs')
-const out = path.join(root, 'helper', 'bin', 'DesktopBuddyHelper.exe')
+const folder = path.join(root, 'helper')
+const sources = readdirSync(folder)
+  .filter((file) => file.endsWith('.cs'))
+  .sort()
+  .map((file) => path.join(folder, file))
+const out = path.join(folder, 'bin', 'BlimoHelper.exe')
 
 if (process.platform !== 'win32') {
   console.log('helper: skipped (Windows only)')
   process.exit(0)
 }
-if (existsSync(out) && statSync(out).mtimeMs > statSync(source).mtimeMs) {
+if (existsSync(out) && sources.every((source) => statSync(out).mtimeMs > statSync(source).mtimeMs)) {
   console.log('helper: up to date')
   process.exit(0)
 }
@@ -29,14 +33,14 @@ execFileSync(
   [
     '-nologo',
     '-optimize+',
-    // No console window pops up when DesktopBuddy starts it.
+    // No console window pops up when Blimo starts it.
     '-target:winexe',
     `-out:${out}`,
     `-r:${path.join(metadata, 'Windows.Media.winmd')}`,
     `-r:${path.join(metadata, 'Windows.Foundation.winmd')}`,
     `-r:${path.join(framework, 'System.Runtime.dll')}`,
     `-r:${path.join(framework, 'System.Runtime.InteropServices.WindowsRuntime.dll')}`,
-    source,
+    ...sources,
   ],
   { stdio: 'inherit' },
 )

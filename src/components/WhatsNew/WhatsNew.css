@@ -37,7 +37,21 @@
 .whats-new-foot {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   padding: 12px 14px 14px;
+}
+
+/* Switching on something new that stays off until asked, beside the main button and quieter than it. */
+.panel .whats-new-offer {
+  padding: 6px 12px;
+  border: 1px solid var(--p-edge);
+  border-radius: 8px;
+  color: var(--p-text);
+  font-size: 12px;
+}
+
+.panel .whats-new-offer:hover {
+  background: var(--p-surface-hi);
 }
 
 .panel .whats-new-done {

@@ -27,3 +27,23 @@ helper/bin
 *.njsproj
 *.sln
 *.sw?
+
+# Promo working files: trailers, design options, profile GIFs, launch drafts. Kept on this PC, not shared.
+promo/
+
+# Secrets, if any ever turn up
+.env
+.env.*
+!.env.example
+
+# Caches from tools
+.eslintcache
+*.tsbuildinfo
+
+# Windows' own folder files
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Claude Code's settings for this PC only
+.claude/settings.local.json

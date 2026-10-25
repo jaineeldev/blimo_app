@@ -26,6 +26,11 @@ const LINES: Record<UpdateNotice['status'], ((version: string) => string)[]> = {
     (v) => `New version downloaded! Restart me for v${v}, or I'll do it when I close.`,
     (v) => `v${v} is all set. Restart me whenever you're ready, or I'll update when I close.`,
   ],
+  available: [
+    (v) => `v${v} is out! Grab it from my website when you get a sec.`,
+    (v) => `There's a new me: v${v}. Download it whenever you're ready.`,
+    (v) => `Psst, v${v} is out. Want to go and get it?`,
+  ],
   downloading: [
     (v) => `Found v${v}! Downloading it now…`,
     (v) => `Ooh, v${v} is out. Grabbing it now…`,
@@ -179,7 +184,7 @@ function NoticeBubble({ notice, size, onDone }: { notice: UpdateNotice; size: nu
 
   useEffect(() => {
     const { react, bump } = useBuddyStore.getState()
-    if (notice.status === 'ready' || notice.status === 'updated') {
+    if (notice.status === 'ready' || notice.status === 'updated' || notice.status === 'available') {
       react('happy', 1_400)
       bump()
     }
@@ -196,6 +201,26 @@ function NoticeBubble({ notice, size, onDone }: { notice: UpdateNotice; size: nu
       <div className="bubble-actions">
         <button type="button" className="bubble-btn" onClick={() => window.buddy?.installUpdate()}>
           Restart now
+        </button>
+        <button type="button" className="bubble-btn bubble-btn--ghost" onClick={leave}>
+          Later
+        </button>
+      </div>
+    )
+  }
+  // A Mac downloads new versions by hand: the button opens the download page.
+  if (notice.status === 'available') {
+    extra = (
+      <div className="bubble-actions">
+        <button
+          type="button"
+          className="bubble-btn"
+          onClick={() => {
+            leave()
+            window.buddy?.installUpdate()
+          }}
+        >
+          Get it
         </button>
         <button type="button" className="bubble-btn bubble-btn--ghost" onClick={leave}>
           Later
@@ -226,7 +251,7 @@ function NoticeBubble({ notice, size, onDone }: { notice: UpdateNotice; size: nu
 
   // Lines without buttons step aside on their own once you've had time to read them. The goodbye
   // stays up instead: the app is about to close.
-  const staysUp = notice.status === 'ready' || notice.status === 'restarting'
+  const staysUp = notice.status === 'ready' || notice.status === 'restarting' || notice.status === 'available'
   const linger = notice.status === 'updated' ? HELLO_LINGER_MS : LINGER_MS
   useEffect(() => {
     if (staysUp) return

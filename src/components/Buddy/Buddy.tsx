@@ -80,6 +80,8 @@ interface BuddyProps {
   sparkle?: boolean
   /** Music is playing: it bops along, with notes floating up. */
   groove?: boolean
+  /** The music's beat, when it can be heard: the bops land on it. Without one, it bops at its own pace. */
+  beat?: Beat | null
   /** Somewhere to watch instead of the cursor (a video), relative to the window. */
   lookAt?: { x: number; y: number } | null
   /** A video is on: it holds a bucket of popcorn, and eats from it while it watches. */
@@ -355,6 +357,58 @@ function useGroove(on: boolean, wrapper: RefObject<HTMLDivElement>): boolean {
   return grooving
 }
 
+/** Where in the groove loop each bop lands (its dip): the left one here, the right one half a loop on. Matches buddy.css. */
+const BOP_AT = 0.14
+/** Tempos outside these are bopped at double or half time, so it never thrashes about or crawls. */
+const BOP_BPM = { min: 70, max: 140 } as const
+/** Off the beat, it speeds up or slows down a touch (never more than this much) to catch up over about this long, checking this often. */
+const MAX_NUDGE = 0.3
+const CATCH_UP_MS = 1_000
+const CHECK_MS = 250
+
+/**
+ * Keeps the groove in time with the music's beat while there is one: the loop takes two beats, and
+ * each dip lands on a beat. Between checks it runs on its own, so a beat that drops out (a quiet bit)
+ * leaves it bopping at the last tempo.
+ */
+function useBopToBeat(beat: Beat | null, wrapper: RefObject<HTMLDivElement>) {
+  useEffect(() => {
+    const el = wrapper.current
+    if (!beat || !el) return
+    const groove = el
+      .getAnimations()
+      .find((a): a is CSSAnimation => a instanceof CSSAnimation && a.animationName === 'b-groove')
+    if (!groove?.effect) return
+    let bpm = beat.bpm
+    while (bpm > BOP_BPM.max) bpm /= 2
+    while (bpm < BOP_BPM.min) bpm *= 2
+    const beatMs = 60_000 / bpm
+    const loop = 2 * beatMs
+
+    // The new tempo, carrying on from the same point in the loop.
+    const duration = Number(groove.effect.getTiming().duration) || GROOVE_MS
+    const at = Number(groove.currentTime ?? 0)
+    groove.effect.updateTiming({ duration: loop })
+    groove.currentTime = ((at % duration) / duration) * loop
+
+    const check = () => {
+      const now = Number(groove.currentTime ?? 0)
+      // Where the loop should be: on a dip at every beat, and half a loop on at the next.
+      const want = BOP_AT * loop + ((((Date.now() - beat.at) % beatMs) + beatMs) % beatMs)
+      let off = (want - (now % loop)) % beatMs
+      if (off >= beatMs / 2) off -= beatMs
+      if (off < -beatMs / 2) off += beatMs
+      groove.playbackRate = 1 + Math.max(-MAX_NUDGE, Math.min(MAX_NUDGE, off / CATCH_UP_MS))
+    }
+    check()
+    const timer = window.setInterval(check, CHECK_MS)
+    return () => {
+      window.clearInterval(timer)
+      groove.playbackRate = 1
+    }
+  }, [beat, wrapper])
+}
+
 const NOTE_COLOUR = toHex(oklch(0.8, 0.14, 80))
 /** A single note and a pair joined by a beam, flat like the rest of the buddy, in a 12-unit box. */
 const QUAVER =
@@ -552,6 +606,7 @@ function Face({
   peek = null,
   sparkle = false,
   groove = false,
+  beat = null,
   lookAt = null,
   snacking = false,
 }: FaceProps) {
@@ -575,6 +630,7 @@ function Face({
     target: lookAt,
   })
   const grooving = useGroove(groove && !reducedMotion, grooveRef)
+  useBopToBeat(groove && !reducedMotion ? beat : null, grooveRef)
   // Bites only while it's calmly watching, not mid-gasp at what just happened.
   const bite = useBites(snacking && mood === 'watching' && !reducedMotion, grooveRef, eyesRef)
 

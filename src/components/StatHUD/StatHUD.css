@@ -1,0 +1,69 @@
+/* The pills under the buddy, stacked and centred. Never catch the mouse. */
+.stat-hud {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+/* One pill: the panel's dark card, slimmed to one line. */
+.stat-pill {
+  display: flex;
+  gap: 18px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: #111113;
+  border: 1px solid #2a2a30;
+  color: #8d8d95;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  /* Numbers keep the same width as they change, so the pill doesn't wobble. */
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-pill b {
+  display: inline-block;
+  /* Room for "100%", so going from 9% to 10% doesn't nudge the pill. */
+  min-width: 3.4ch;
+  margin-left: 5px;
+  color: #ececef;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* The song: a note, the title, then the artist, cut short with an ellipsis if it's long. */
+.stat-song {
+  align-items: center;
+  gap: 6px;
+  max-width: 300px;
+  padding-left: 13px;
+}
+
+.stat-song svg {
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+
+.stat-song b,
+.stat-song span {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* A long title gives way first; the artist keeps up to a third of the pill. */
+.stat-song b {
+  flex: 0 1 auto;
+  font-size: 12.5px;
+}
+
+.stat-song span {
+  flex: none;
+  max-width: 100px;
+}

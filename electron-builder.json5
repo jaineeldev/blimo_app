@@ -1,10 +1,11 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  // Must match APP_ID in electron/main.ts.
+  // Must match APP_ID in electron/main.ts. It stays from when the app was called DesktopBuddy, so
+  // installs from then still update in place and keep their settings.
   "appId": "com.jaineel.desktopbuddy",
   "asar": true,
-  "productName": "DesktopBuddy",
+  "productName": "Blimo",
   "copyright": "Copyright © 2026 Jaineel",
   "directories": {
     "output": "release/${version}",
@@ -16,9 +17,6 @@
     "dist",
     "dist-electron"
   ],
-  // The little Windows helper that notices music, videos and full-screen apps (helper/, built by
-  // scripts/build-helper.mjs). It runs as its own program, so it sits outside app.asar.
-  "extraResources": [{ "from": "helper/bin/DesktopBuddyHelper.exe", "to": "helper/DesktopBuddyHelper.exe" }],
   // Chromium ships translations of its own menus and messages in about 50 languages. The app is
   // English-only, so keeping just these saves around 37 MB.
   "electronLanguages": ["en-GB", "en-US"],
@@ -26,15 +24,32 @@
   "publish": {
     "provider": "github",
     "owner": "jaineeldev",
-    "repo": "desktop_buddy",
+    "repo": "blimo_app",
     // Full GitHub releases from v1.0.0 on (early access went out as pre-releases).
     "releaseType": "release"
   },
   "mac": {
+    // One download for every Mac, Apple Silicon and Intel. The dmg is what people download; the zip and
+    // latest-mac.yml are how the app finds out a new version is out.
     "target": [
-      "dmg"
+      { "target": "dmg", "arch": ["universal"] },
+      { "target": "zip", "arch": ["universal"] }
     ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    "artifactName": "${productName}-Mac-${version}.${ext}",
+    "category": "public.app-category.entertainment",
+    // Sora on Apple's icon grid, made from brand/icon.svg.
+    "icon": "build/icon.png",
+    // No Apple Developer certificate (yet), so an ad-hoc signature: macOS then asks people to allow it
+    // once, with Open Anyway, rather than calling it damaged.
+    "identity": "-",
+    "hardenedRuntime": false,
+    "gatekeeperAssess": false,
+    // A menu bar app, with no Dock icon from the moment it opens.
+    "extendInfo": { "LSUIElement": true },
+    "darkModeSupport": true
+  },
+  "dmg": {
+    "title": "Blimo ${version}"
   },
   "win": {
     "target": [
@@ -47,7 +62,10 @@
     ],
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}",
     // Sora, the default buddy, generated with all the sizes Windows asks for (source: brand/icon.svg).
-    "icon": "build/icon.ico"
+    "icon": "build/icon.ico",
+    // The little helper that notices music, videos and full-screen apps (helper/, built by
+    // scripts/build-helper.mjs). It runs as its own program, so it sits outside app.asar.
+    "extraResources": [{ "from": "helper/bin/BlimoHelper.exe", "to": "helper/BlimoHelper.exe" }]
   },
   "nsis": {
     "oneClick": false,
@@ -58,7 +76,9 @@
     "uninstallerIcon": "build/icon.ico",
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
-    "shortcutName": "DesktopBuddy"
+    "shortcutName": "Blimo",
+    // Clears away shortcuts from when it was called DesktopBuddy (see the file).
+    "include": "build/installer.nsh"
   },
   "linux": {
     "target": [

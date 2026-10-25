@@ -1,9 +1,22 @@
 /**
  * What changed in each version, in the buddy's own words, newest first. Shown in the what's new card
  * after an update and from the tray. Add an entry with every release; a version without one simply
- * doesn't offer the card after updating.
+ * doesn't offer the card after updating. An `offer` adds a button that switches a new option on (see
+ * WhatsNew.tsx), for things that stay off until you say so.
  */
-export const WHATS_NEW: { version: string; notes: string[] }[] = [
+export const WHATS_NEW: { version: string; notes: string[]; offer?: 'bopToBeat' }[] = [
+  {
+    version: '1.2.0',
+    notes: [
+      "I've got a new name: DesktopBuddy is now Blimo! Same me, though.",
+      "I've got six new moods: excited, shy, proud, scared, content and thinking. See if you can spot them all.",
+      "Hover over me to see how hard your computer is working: CPU, memory and graphics card. Turn on show what's playing in my panel and you'll see the song there too.",
+      "When your computer works flat out for a while I get a bit stressed, and when its memory's nearly full I feel stuffed.",
+      "I can bop in time with your music now. To find the beat I have to listen to it, so that's off until you turn it on. The sound never leaves your PC.",
+      "I'm on Mac now too!",
+    ],
+    offer: 'bopToBeat',
+  },
   {
     version: '1.1.0',
     notes: [

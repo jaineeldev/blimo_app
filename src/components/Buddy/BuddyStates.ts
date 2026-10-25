@@ -14,8 +14,16 @@ export type BuddyState =
   | 'focused'
   | 'smug'
   | 'dizzy'
-  // Only while a video plays, so it isn't in the list below that the panel and gallery offer.
-  | 'watching';
+  | 'excited'
+  | 'shy'
+  | 'proud'
+  | 'scared'
+  | 'content'
+  | 'thinking'
+  // Only while a video plays, and while the memory is nearly full, so these aren't in the list below
+  // that the panel and gallery offer.
+  | 'watching'
+  | 'stuffed';
 
 export const BUDDY_STATES: BuddyState[] = [
   'idle',
@@ -33,4 +41,10 @@ export const BUDDY_STATES: BuddyState[] = [
   'focused',
   'smug',
   'dizzy',
+  'excited',
+  'shy',
+  'proud',
+  'scared',
+  'content',
+  'thinking',
 ];

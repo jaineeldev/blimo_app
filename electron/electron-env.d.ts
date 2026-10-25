@@ -26,7 +26,8 @@ declare namespace NodeJS {
  * before it restarts to install, or hello again once it has (that last one comes from the renderer).
  */
 type UpdateNotice =
-  | { status: 'ready' | 'downloading' | 'updated'; version: string }
+  // 'available' is a Mac's news: a new version is out, to download by hand.
+  | { status: 'ready' | 'downloading' | 'updated' | 'available'; version: string }
   | { status: 'current' | 'failed' | 'restarting' }
 
 /** The screen edge the buddy is tucked behind, peeking out, after being pushed there. */
@@ -47,10 +48,26 @@ interface MenuState {
 /** What's playing, going by Windows' media info: music or a video (null for nothing). */
 type MediaKind = 'music' | 'video'
 
+/** The music's tempo, and when a recent beat played (ms since 1970); later beats follow every 60000 / bpm ms. */
+interface Beat {
+  bpm: number
+  at: number
+}
+
+/** The music's title and artist, as the app playing it tells Windows. */
+interface Song {
+  title: string
+  artist: string
+}
+
 interface MediaNow {
   playing: MediaKind | null
   /** The middle of the video's window, relative to the buddy's window, when it could be found. */
   lookAt: { x: number; y: number } | null
+  /** The music's beat, while "bop to the beat" is on and the music has a clear one. */
+  beat: Beat | null
+  /** The song, while "show what's playing" is on and the app says. */
+  song: Song | null
 }
 
 /** The panel's switches for noticing what's on screen. The helper only runs while one is on. */
@@ -59,6 +76,21 @@ interface MediaOptions {
   react: boolean
   /** Fade out of the way while something is full screen on the buddy's screen. */
   stepAside: boolean
+  /** Stats on hover, which on Windows include the GPU, read by the helper. */
+  stats: boolean
+  /** Bop in time with the music, which means listening to it for the beat. Only counts with `react` on. */
+  beat: boolean
+  /** Show the song that's playing, which means reading its title and artist. Only counts with `react` on. */
+  song: boolean
+}
+
+/** How busy the computer is, as percentages, plus memory in GB. `gpu` is only read while the stats show, and only on Windows. */
+interface SystemStats {
+  cpu: number
+  ram: number
+  ramUsedGb: number
+  ramTotalGb: number
+  gpu: number | null
 }
 
 /** A box in px, relative to the window's content area. */
@@ -74,6 +106,8 @@ interface Window {
   ipcRenderer: import('electron').IpcRenderer
   /** Missing when the renderer runs in a plain browser, such as the face gallery. */
   buddy?: {
+    /** Which system it's running on ('win32', 'darwin'), for things that differ, like wording. */
+    platform: string
     /** Cursor position relative to the window's content area, even when it is outside the window. */
     onCursor(callback: (point: { x: number; y: number }) => void): () => void
     onNewFace(callback: () => void): () => void
@@ -116,12 +150,16 @@ interface Window {
     setStartWithWindows(on: boolean): void
     /** Checks for a new version now; the answer arrives through `onUpdate`. */
     checkForUpdates(): void
-    /** Closes DesktopBuddy completely, like Quit in the tray menu. */
+    /** Closes Blimo completely, like Quit in the tray menu. */
     quit(): void
     /** Music or a video started or stopped, or the video's window moved. Windows only. */
     onMedia(callback: (media: MediaNow) => void): () => void
     /** A full-screen app took over the buddy's screen (fade out), or it's gone again (fade back in). */
     onStepAside(callback: (aside: boolean) => void): () => void
     setMediaOptions(options: MediaOptions): void
+    /** CPU, memory and (while the stats show, on Windows) GPU use: every couple of seconds, every second while shown. */
+    onStats(callback: (stats: SystemStats) => void): () => void
+    /** The stats are showing (hovered), or not; while they are, readings come faster and include the GPU. */
+    setStatsShowing(showing: boolean): void
   }
 }

@@ -8,11 +8,14 @@ type Step =
   | { status: 'idle' | 'checking' | 'current' | 'failed' | 'restarting' }
   | { status: 'downloading'; version: string | null; percent: number | null }
   | { status: 'ready'; version: string }
+  /** A Mac: out, for downloading from the website. */
+  | { status: 'available'; version: string }
 
 /** Picks up an update that was already under way when the panel opened. */
 function stepFrom(state: MenuState['update']): Step {
   if (state.status === 'downloading') return { status: 'downloading', version: state.version, percent: null }
   if (state.status === 'ready') return { status: 'ready', version: state.version }
+  if (state.status === 'available') return { status: 'available', version: state.version }
   return { status: 'idle' }
 }
 
@@ -28,6 +31,7 @@ export function UpdateButton({ menu }: { menu: MenuState }) {
     if (!bridge) return
     const offNotice = bridge.onUpdate((notice) => {
       if (notice.status === 'ready') setStep({ status: 'ready', version: notice.version })
+      else if (notice.status === 'available') setStep({ status: 'available', version: notice.version })
       else if (notice.status === 'downloading')
         setStep((s) => ({ status: 'downloading', version: notice.version, percent: s.status === 'downloading' ? s.percent : null }))
       else if (notice.status !== 'updated') setStep({ status: notice.status })
@@ -80,6 +84,8 @@ export function UpdateButton({ menu }: { menu: MenuState }) {
     }
     case 'ready':
       return <Action icon={<RefreshIcon />} label={`Restart to update to v${step.version}`} onClick={() => window.buddy?.installUpdate()} />
+    case 'available':
+      return <Action icon={<DownloadIcon />} label={`Download v${step.version}`} onClick={() => window.buddy?.installUpdate()} />
     case 'restarting':
       return <Action icon={<RefreshIcon spinning />} label="Restarting…" />
   }

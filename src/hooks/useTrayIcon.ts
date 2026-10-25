@@ -51,7 +51,7 @@ export function useTrayIcon(look: BuddyLook, name: string) {
     const timer = window.setTimeout(async () => {
       // Windows wants 16px on standard displays and 32px on high-DPI ones.
       const [x1, x2] = await Promise.all([rasterize(iconSvg(look, 1.45, 16), 16), rasterize(iconSvg(look, 1.3, 32), 32)])
-      if (!cancelled) bridge.setTrayIcon({ x1, x2, tooltip: `${name.trim() || 'buddy'} · DesktopBuddy` })
+      if (!cancelled) bridge.setTrayIcon({ x1, x2, tooltip: `${name.trim() || 'buddy'} · Blimo` })
     }, DEBOUNCE_MS)
     return () => {
       cancelled = true

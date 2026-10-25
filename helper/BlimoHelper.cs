@@ -1,18 +1,26 @@
-// The helper DesktopBuddy runs in the background on Windows, so the buddy can react to what you're up
-// to. Once a second it works out three things and, whenever they change, prints one line of JSON:
+// The helper Blimo runs in the background on Windows, so the buddy can react to what you're up
+// to. Once a second it works out a few things and, whenever they change, prints one line of JSON:
 //
 //   playing     "music", "video" or null: whether anything is playing, from Windows' own media info
 //               (the same thing the volume pop-up shows)
 //   video       the screen box [left, top, right, bottom] of the window the video is in, so the buddy
 //               can turn to watch it
 //   fullscreen  the box of the screen a full-screen app or game is covering, so the buddy can step aside
+//   gpu         how busy the graphics card is, 0 to 100, but only while Blimo asks ("gpu 1" on a
+//               line of input; "gpu 0" stops it), which is while its stats are showing
+//   beat        the music's tempo and the time of a recent beat, {bpm, at} (at in milliseconds since
+//               1970), but only while Blimo asks ("beat 1"; "beat 0" stops it), which is when you've
+//               switched on "bop to the beat", and only while music plays
+//   song        the music's {title, artist}, from the media info, but only while Blimo asks
+//               ("song 1"; "song 0" stops it), which is when you've switched on "show what's playing"
 //
-// It never reads what you're listening to or watching, and never touches the audio. Browsers call
-// everything music, so to tell a video from a song it checks whether a browser window's title is a
-// video site's, like YouTube. Nothing is kept or sent anywhere: it only talks to DesktopBuddy.
+// It never reads what you're watching, and only reads the song, or hears the sound for the beat, when
+// asked as above (see Loopback.cs and BeatTracker.cs for the beat). Browsers call everything music, so
+// to tell a video from a song it checks whether a browser window's title is a video site's, like
+// YouTube. Nothing is kept or sent anywhere: it only talks to Blimo.
 //
 // scripts/build-helper.mjs builds it with the C# compiler that comes with Windows, so nobody has to
-// install anything. Run as: DesktopBuddyHelper.exe <DesktopBuddy's process id>
+// install anything. Run as: BlimoHelper.exe <Blimo's process id>
 
 using System;
 using System.Collections.Generic;
@@ -26,9 +34,9 @@ using Windows.Foundation;
 using Windows.Media;
 using Windows.Media.Control;
 
-[assembly: System.Reflection.AssemblyTitle("DesktopBuddy helper")]
-[assembly: System.Reflection.AssemblyDescription("Lets DesktopBuddy react to music, videos and full-screen apps")]
-[assembly: System.Reflection.AssemblyProduct("DesktopBuddy")]
+[assembly: System.Reflection.AssemblyTitle("Blimo helper")]
+[assembly: System.Reflection.AssemblyDescription("Lets Blimo react to music, videos and full-screen apps")]
+[assembly: System.Reflection.AssemblyProduct("Blimo")]
 
 static class Helper
 {
@@ -75,19 +83,44 @@ static class Helper
         "XamlExplorerHostIslandWindow", "MultitaskingViewFrame", "ForegroundStaging", "LockScreenBackstopFrame",
     };
 
+    // After the listening fails (no speakers, say), it waits this long before trying again.
+    const int ListenRetryMs = 10000;
+
     static int appPid;
+    static volatile bool gpuWanted;
+    static volatile bool beatWanted;
+    static volatile bool songWanted;
+    static volatile bool musicPlaying;
+    // Listening for the beat: the thread doing it, the tracker it's feeding, and when it last failed.
+    static volatile Thread listener;
+    static volatile BeatTracker beat;
+    static DateTime listenFailed = DateTime.MinValue;
     static GlobalSystemMediaTransportControlsSessionManager media;
     static readonly Dictionary<uint, string> processNames = new Dictionary<uint, string>();
 
     static void Main(string[] args)
     {
-        // Real pixels on every screen, whatever its scaling, so boxes line up with what DesktopBuddy sees.
+        // Real pixels on every screen, whatever its scaling, so boxes line up with what Blimo sees.
         try { SetProcessDpiAwarenessContext(new IntPtr(-4)); } catch (EntryPointNotFoundException) { SetProcessDPIAware(); }
         if (args.Length > 0) int.TryParse(args[0], out appPid);
 
-        // When DesktopBuddy closes, its end of our input closes too, and the helper goes with it.
+        // Blimo asks for the GPU reading, the beat and the song over our input. When it closes, its end of
+        // our input closes too, and the helper goes with it.
         var watchInput = new Thread(() => {
-            try { while (Console.In.Read() != -1) { } } catch (IOException) { }
+            try
+            {
+                string request;
+                while ((request = Console.In.ReadLine()) != null)
+                {
+                    if (request == "gpu 1") gpuWanted = true;
+                    else if (request == "gpu 0") gpuWanted = false;
+                    else if (request == "beat 1") beatWanted = true;
+                    else if (request == "beat 0") beatWanted = false;
+                    else if (request == "song 1") songWanted = true;
+                    else if (request == "song 0") songWanted = false;
+                }
+            }
+            catch (IOException) { }
             Environment.Exit(0);
         });
         watchInput.IsBackground = true;
@@ -99,6 +132,7 @@ static class Helper
         string lastLine = null;
         string lastKind = null;
         int[] lastVideo = null;
+        string lastSong = null;
         DateTime lastPlaying = DateTime.MinValue;
         while (true)
         {
@@ -106,22 +140,38 @@ static class Helper
             processNames.Clear();
 
             int[] video;
-            string kind = Playing(out video);
+            GlobalSystemMediaTransportControlsSession musicFrom;
+            string kind = Playing(out video, out musicFrom);
+            string song = null;
+            if (kind == "music" && songWanted && musicFrom != null) song = Song(musicFrom);
             if (kind != null)
             {
                 lastKind = kind;
                 lastVideo = video;
+                lastSong = song;
                 lastPlaying = DateTime.UtcNow;
             }
             else if ((DateTime.UtcNow - lastPlaying).TotalMilliseconds < StopGraceMs)
             {
                 kind = lastKind;
                 video = lastVideo;
+                song = lastSong;
             }
 
+            int gpu = -1;
+            if (gpuWanted) gpu = GpuBusy();
+            else lastGpu.Clear();
+
+            musicPlaying = kind == "music";
+            bool listen = beatWanted && musicPlaying;
+            if (listen && listener == null && (DateTime.UtcNow - listenFailed).TotalMilliseconds > ListenRetryMs) StartListening();
+            BeatTracker tracker = beat;
             string line = "{\"playing\":" + (kind == null ? "null" : "\"" + kind + "\"") +
                 ",\"video\":" + Json(kind == "video" ? video : null) +
-                ",\"fullscreen\":" + Json(FullScreen()) + "}";
+                ",\"fullscreen\":" + Json(FullScreen()) +
+                ",\"gpu\":" + (gpu < 0 ? "null" : gpu.ToString()) +
+                ",\"beat\":" + (listen && tracker != null ? tracker.Json() : "null") +
+                ",\"song\":" + (songWanted && song != null ? song : "null") + "}";
             if (line != lastLine)
             {
                 Console.Out.WriteLine(line);
@@ -132,10 +182,39 @@ static class Helper
         }
     }
 
-    /** "video" if a video is playing (with its window's box, when it can be found), else "music" if anything is, else null. */
-    static string Playing(out int[] video)
+    /**
+     * Listens for the beat on a thread of its own until it's no longer wanted or the music stops. It
+     * stops by itself when the output changes too (headphones plugged in, say), and starts again on the
+     * next look, on the new one.
+     */
+    static void StartListening()
+    {
+        var thread = new Thread(() => {
+            try
+            {
+                Loopback.Listen(() => beatWanted && musicPlaying, tracker => beat = tracker);
+            }
+            catch (Exception)
+            {
+                listenFailed = DateTime.UtcNow;
+            }
+            beat = null;
+            listener = null;
+        });
+        thread.IsBackground = true;
+        thread.SetApartmentState(ApartmentState.MTA);
+        listener = thread;
+        thread.Start();
+    }
+
+    /**
+     * "video" if a video is playing (with its window's box, when it can be found), else "music" if anything
+     * is (with the app playing it), else null.
+     */
+    static string Playing(out int[] video, out GlobalSystemMediaTransportControlsSession musicFrom)
     {
         video = null;
+        musicFrom = null;
         if (media == null) return null;
         bool music = false;
         IReadOnlyList<GlobalSystemMediaTransportControlsSession> sessions;
@@ -152,7 +231,12 @@ static class Helper
                     video = FindWindow(false);
                     return "video";
                 }
-                if (ContainsAny(app, MusicApps)) { music = true; continue; }
+                if (ContainsAny(app, MusicApps))
+                {
+                    music = true;
+                    if (musicFrom == null) musicFrom = session;
+                    continue;
+                }
                 // A browser, or something unknown: a video if a browser is showing a video site.
                 int[] site = FindWindow(true);
                 if (site != null)
@@ -161,6 +245,7 @@ static class Helper
                     return "video";
                 }
                 music = true;
+                if (musicFrom == null) musicFrom = session;
             }
             catch (Exception)
             {
@@ -214,11 +299,78 @@ static class Helper
         return covers ? new[] { screen.Left, screen.Top, screen.Right, screen.Bottom } : null;
     }
 
-    static T Await<T>(IAsyncOperation<T> operation)
+    static readonly PerformanceCounterCategory gpuEngines = new PerformanceCounterCategory("GPU Engine");
+    static Dictionary<string, CounterSample> lastGpu = new Dictionary<string, CounterSample>();
+
+    /**
+     * How busy the graphics card's 3D engine is, from the same counters Task Manager reads: each app's
+     * share over the last second, added up. Every counter comes in one read, which is far cheaper than
+     * asking each one. Only the total is kept, never which apps. -1 on the first reading (there's nothing
+     * to compare with yet), or if Windows doesn't have the counters.
+     */
+    static int GpuBusy()
+    {
+        try
+        {
+            bool first = lastGpu.Count == 0;
+            var now = new Dictionary<string, CounterSample>();
+            float total = 0;
+            foreach (InstanceData instance in gpuEngines.ReadCategory()["Utilization Percentage"].Values)
+            {
+                if (!instance.InstanceName.EndsWith("engtype_3D")) continue;
+                now[instance.InstanceName] = instance.Sample;
+                CounterSample before;
+                if (lastGpu.TryGetValue(instance.InstanceName, out before)) total += CounterSample.Calculate(before, instance.Sample);
+            }
+            lastGpu = now;
+            return first ? -1 : (int)Math.Round(Math.Min(100f, total));
+        }
+        catch (Exception)
+        {
+            return -1;
+        }
+    }
+
+    /**
+     * The song's title and artist as JSON, from the app's media info (what the volume pop-up shows), or
+     * null if the app doesn't say. Only read while Blimo asks.
+     */
+    static string Song(GlobalSystemMediaTransportControlsSession session)
+    {
+        try
+        {
+            var info = Await(session.TryGetMediaPropertiesAsync(), 1000);
+            if (info == null || string.IsNullOrWhiteSpace(info.Title)) return null;
+            return "{\"title\":" + JsonText(info.Title.Trim()) + ",\"artist\":" + JsonText((info.Artist ?? "").Trim()) + "}";
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    /** A JSON string, with anything beyond plain ASCII escaped, so names in any language arrive intact whatever the console's code page. */
+    static string JsonText(string text)
+    {
+        var json = new StringBuilder("\"");
+        foreach (char c in text)
+        {
+            if (c == '"' || c == '\\') json.Append('\\').Append(c);
+            else if (c < 0x20 || c > 0x7e) json.Append("\\u").Append(((int)c).ToString("x4"));
+            else json.Append(c);
+        }
+        return json.Append('"').ToString();
+    }
+
+    static T Await<T>(IAsyncOperation<T> operation, int timeoutMs = Timeout.Infinite)
     {
         var done = new ManualResetEvent(false);
         operation.Completed = (op, status) => done.Set();
-        done.WaitOne();
+        if (!done.WaitOne(timeoutMs))
+        {
+            operation.Cancel();
+            throw new TimeoutException();
+        }
         return operation.GetResults();
     }
 
