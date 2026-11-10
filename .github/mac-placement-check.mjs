@@ -62,13 +62,15 @@ for (const [name, [x, y]] of Object.entries(SPOTS)) {
   execFileSync('screencapture', ['-x', `place-${name.replaceAll(' ', '-')}.png`])
 }
 
-// A real drag, from the middle of the screen up to the top, without Blimo being the app in front.
+// A real drag, from the middle of the screen up to the top, with Finder in front so the first press has
+// to count. It starts with a small move, as a hand would: the buddy follows from where the drag begins.
 const start = { x: Math.round(left + screenWidth / 2), y: Math.round(top + screenHeight / 2) }
 const goal = { x: start.x, y: Math.round(top + 60) }
 await place(around(start.x, start.y))
-await wait(800)
+execFileSync('open', ['-a', 'Finder'])
+await wait(1000)
 report(`Blimo in front before the drag: ${await inApp('return win.isFocused()')}`)
-const moves = [0.25, 0.5, 0.75, 1].flatMap((u) => [`dm:${start.x},${Math.round(start.y + (goal.y - start.y) * u)}`, 'w:120'])
+const moves = [`dm:${start.x},${start.y - 6}`, 'w:120', ...[0.25, 0.5, 0.75, 1].flatMap((u) => [`dm:${start.x},${Math.round(start.y + (goal.y - start.y) * u)}`, 'w:120'])]
 execFileSync('cliclick', [`m:${start.x},${start.y}`, 'w:700', `dd:${start.x},${start.y}`, 'w:150', ...moves, `du:${goal.x},${goal.y}`])
 await wait(600)
 const cursor = await inApp('return screen.getCursorScreenPoint()')

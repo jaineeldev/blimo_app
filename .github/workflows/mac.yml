@@ -35,9 +35,11 @@ jobs:
           echo "app=release/$VERSION/mac-universal/Blimo.app" >> "$GITHUB_OUTPUT"
           ls -la "release/$VERSION"
 
-      # Ad-hoc signed (no Apple certificate), and one app for both Apple Silicon and Intel.
+      # Ad-hoc signed (no Apple certificate), and one app for both Apple Silicon and Intel. A bad signature
+      # stops the build here (pipefail, or tee's success would hide it): a downloaded copy wouldn't open.
       - name: Check the signature
         run: |
+          set -o pipefail
           APP="${{ steps.app.outputs.app }}"
           codesign -dv --verbose=2 "$APP" 2>&1 | tee signature.txt
           codesign --verify --deep --strict --verbose=2 "$APP" 2>&1 | tee -a signature.txt

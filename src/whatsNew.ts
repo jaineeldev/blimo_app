@@ -6,6 +6,13 @@
  */
 export const WHATS_NEW: { version: string; notes: string[]; offer?: 'bopToBeat' }[] = [
   {
+    version: '1.2.1',
+    notes: [
+      "You can put me anywhere now, even right on top of the taskbar, the Dock or the menu bar, and I'll stay there.",
+      'On a Mac, I can go right up to the top of the screen, and you can pick me up first go, even with another app in front.',
+    ],
+  },
+  {
     version: '1.2.0',
     notes: [
       "I've got a new name: DesktopBuddy is now Blimo! Same me, though.",
