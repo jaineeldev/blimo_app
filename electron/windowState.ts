@@ -17,10 +17,10 @@ export const peekSide = () => peeking
 
 const middleOf = (b: Rectangle) => ({ x: b.x + b.width / 2, y: b.y + b.height / 2 })
 
-/** Whether the middle of the window, where the buddy sits, is inside one of the screens. */
+/** Whether the middle of the window, where the buddy sits, is on one of the screens. Sitting on the taskbar, Dock or menu bar counts. */
 function onScreen(bounds: Rectangle): boolean {
   const { x, y } = middleOf(bounds)
-  return screen.getAllDisplays().some(({ workArea: a }) => x >= a.x && x < a.x + a.width && y >= a.y && y < a.y + a.height)
+  return screen.getAllDisplays().some(({ bounds: a }) => x >= a.x && x < a.x + a.width && y >= a.y && y < a.y + a.height)
 }
 
 /** Where the buddy was last left, as long as that spot is still on a screen you have. */

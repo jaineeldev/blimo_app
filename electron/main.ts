@@ -68,8 +68,13 @@ function createWindow() {
     transparent: true,
     // On Windows, a tool window, like a desktop widget: no taskbar button to minimise it by accident, out
     // of Alt+Tab, still there after Show desktop (Win+D), and on every virtual desktop rather than just
-    // the first. On a Mac, a plain borderless window without the shadow Macs give windows.
-    ...(process.platform === 'darwin' ? { hasShadow: false } : { type: 'toolbar' }),
+    // the first. On a Mac, a plain borderless window without the shadow Macs give windows. Left to itself,
+    // macOS keeps a window's top edge under the menu bar, which with the buddy in the middle of this one
+    // rules out the top third of the screen, and ignores the first click on a window in the background,
+    // so a drag wouldn't start while another app was in front.
+    ...(process.platform === 'darwin'
+      ? { hasShadow: false, enableLargerThanScreen: true, acceptFirstMouse: true }
+      : { type: 'toolbar' }),
     minimizable: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),

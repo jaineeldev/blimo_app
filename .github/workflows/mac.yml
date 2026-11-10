@@ -1,7 +1,7 @@
-# Builds the Mac version on GitHub's free Macs, checks its signature, opens it and takes screenshots.
+# Builds the Mac version on GitHub's free Macs, checks its signature, opens it, takes screenshots and tries moving it.
 # Run it from the Actions tab (Mac build → Run workflow). When it finishes, the run page has two downloads:
 #   Blimo-Mac          the dmg, zip, blockmaps and latest-mac.yml to attach to a release
-#   Mac screenshots    what it looked like once open, plus its signature check and log
+#   Mac screenshots    what it looked like once open and moved around, plus placement.txt, its signature check and log
 name: Mac build
 
 on:
@@ -16,7 +16,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 22 for mac-placement-check.mjs, which needs Node's built-in WebSocket.
+          node-version: 22
           cache: npm
 
       - name: Install
@@ -43,15 +44,18 @@ jobs:
           echo "architectures: $(lipo -archs "$APP/Contents/MacOS/Blimo")" | tee -a signature.txt
 
       # A first look before anyone tries it on a real Mac. Opened the way double-clicking it does (so the
-      # menu bar app setup applies: no Dock icon), on its intro, as a new install would.
-      - name: Open it and take screenshots
+      # menu bar app setup applies: no Dock icon), on its intro, as a new install would. Then it's tried
+      # all over the screen, and with a real drag (cliclick plays the mouse).
+      - name: Open it, take screenshots and try moving it
         continue-on-error: true
         run: |
-          open --stdout "$PWD/app.log" --stderr "$PWD/app.log" "${{ steps.app.outputs.app }}"
+          brew install cliclick
+          open --stdout "$PWD/app.log" --stderr "$PWD/app.log" "${{ steps.app.outputs.app }}" --args --inspect=9229
           sleep 15
           screencapture -x shot-1.png
           sleep 8
           screencapture -x shot-2.png
+          node .github/mac-placement-check.mjs
           pkill -f "Blimo.app" || true
 
       - uses: actions/upload-artifact@v4
@@ -69,5 +73,7 @@ jobs:
           name: Mac screenshots
           path: |
             shot-*.png
+            place-*.png
+            placement.txt
             signature.txt
             app.log
