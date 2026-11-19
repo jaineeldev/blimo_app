@@ -9,6 +9,12 @@
   pointer-events: none;
 }
 
+/* Above the buddy (near the bottom of the screen), stacked the other way, so the order seen from the
+   buddy stays the same. */
+.stat-hud--above {
+  flex-direction: column-reverse;
+}
+
 /* One pill: the panel's dark card, slimmed to one line. */
 .stat-pill {
   display: flex;

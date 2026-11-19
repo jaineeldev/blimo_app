@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { createTray } from './tray'
 import { startCursorFeed } from './cursor'
-import { registerWindowControls, stayOnTop } from './interaction'
+import { registerWindowControls, stayOnTop, watchScreenSpace } from './interaction'
 import { registerActivity } from './activity'
 import { startMediaWatch } from './media'
 import { startStats } from './stats'
@@ -101,10 +101,10 @@ function createWindow() {
   // Clicks pass through until the renderer sees the cursor over the buddy or the panel.
   win.setIgnoreMouseEvents(true, { forward: true })
 
-  // Test active push message to Renderer-process.
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', (new Date).toLocaleString())
-  })
+  // The window only ever shows the buddy's own page: it never navigates elsewhere or opens new windows.
+  // Links out (the download page) go through shell.openExternal in the main process instead.
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+  win.webContents.on('will-navigate', (event) => event.preventDefault())
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
@@ -116,6 +116,7 @@ function createWindow() {
   createTray(win, startUpdates(win))
   startCursorFeed(win)
   keepOnScreen(win)
+  watchScreenSpace(win)
   startStats(win, startMediaWatch(win))
 }
 

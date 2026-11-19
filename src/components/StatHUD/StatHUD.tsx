@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { roomAround, useScreenSpace } from '../../hooks/useScreenSpace'
 import { useSystemStats } from '../../hooks/useSystemStats'
 import './StatHUD.css'
 
@@ -8,6 +9,11 @@ const SHOW_AFTER_MS = 400
 /** Only Windows can read the GPU (through the helper). */
 const HAS_GPU = window.buddy?.platform === 'win32'
 /** A single note, like the ones that float up while it bops, in a 12-unit box. */
+/** Space between the pills and the buddy, and between the pills and the screen's edges. */
+const GAP = 14
+const EDGE_GAP = 8
+/** Taken as the pills' size until they've been measured: one pill. */
+const GUESS = { width: 240, height: 32 }
 const NOTE =
   'M7.6 1.2V8.6C7.6 10.5 5.9 11.6 4.1 11.4 2.5 11.2 1.5 10.1 1.9 8.9 2.3 7.6 4.2 6.8 5.9 7.3V1.2ZM7.6 1.2C9.2 2 10.6 3.3 10 6.2 9.6 4.8 8.8 4.1 7.6 3.9Z'
 
@@ -18,14 +24,16 @@ interface StatHUDProps {
   /** The song that's playing, when "show what's playing" is on. */
   song: Song | null
   size: number
-  peek: PeekSide | null
+  /** The buddy is saying something. Pills that would have to go above it wait, so they don't cover it. */
+  talking: boolean
 }
 
 /**
  * Slim pills under the buddy while you hover over it: how busy your computer is, and the song that's
- * playing. Tucked behind a screen edge, they shift towards the side that's showing.
+ * playing. Near the bottom of the screen (above the taskbar or Dock) they go above it instead, and near
+ * a side, or tucked behind a screen edge, they slide over to stay on screen.
  */
-export function StatHUD({ hovered, stats: showStats, song, size, peek }: StatHUDProps) {
+export function StatHUD({ hovered, stats: showStats, song, size, talking }: StatHUDProps) {
   const [shown, setShown] = useState(false)
   useEffect(() => {
     if (!hovered) {
@@ -38,16 +46,43 @@ export function StatHUD({ hovered, stats: showStats, song, size, peek }: StatHUD
   const stats = useSystemStats(shown && showStats)
   const any = (showStats && stats) || song
 
+  const space = useScreenSpace()
+  const [box, setBox] = useState(GUESS)
+  const observer = useRef<ResizeObserver | null>(null)
+  // offsetWidth/Height ignore the slide-in transform, so this is the size they settle at.
+  const ref = useCallback((el: HTMLElement | null) => {
+    observer.current?.disconnect()
+    observer.current = null
+    if (!el) return
+    const measure = () => setBox({ width: el.offsetWidth || GUESS.width, height: el.offsetHeight || GUESS.height })
+    measure()
+    observer.current = new ResizeObserver(measure)
+    observer.current.observe(el)
+  }, [])
+  useEffect(() => () => observer.current?.disconnect(), [])
+
+  const reach = Math.round(size * 0.36 + GAP)
+  const room = roomAround(space, reach)
+  const above = room.below < box.height + EDGE_GAP && room.above > room.below
+  // Centred under the buddy unless that would run off a side of the screen.
+  const centre = window.innerWidth / 2
+  const half = box.width / 2
+  const lo = room.left + EDGE_GAP + half
+  const hi = room.right - EDGE_GAP - half
+  const shift = lo > hi ? 0 : Math.min(Math.max(centre, lo), hi) - centre
+  const nudge = above ? 4 : -4
+
   return (
     <AnimatePresence>
-      {shown && any && (
+      {shown && any && !(above && talking) && (
         <motion.div
           key="stats"
-          className="stat-hud"
-          style={{ top: `calc(50% + ${Math.round(size * 0.36 + 14)}px)`, marginLeft: peek === 'right' ? -110 : peek === 'left' ? 110 : 0 }}
-          initial={{ opacity: 0, y: -4, x: '-50%' }}
+          ref={ref}
+          className={above ? 'stat-hud stat-hud--above' : 'stat-hud'}
+          style={{ ...(above ? { bottom: `calc(50% + ${reach}px)` } : { top: `calc(50% + ${reach}px)` }), marginLeft: shift }}
+          initial={{ opacity: 0, y: nudge, x: '-50%' }}
           animate={{ opacity: 1, y: 0, x: '-50%' }}
-          exit={{ opacity: 0, y: -4, x: '-50%' }}
+          exit={{ opacity: 0, y: nudge, x: '-50%' }}
           transition={{ duration: 0.2 }}
         >
           {showStats && stats && (

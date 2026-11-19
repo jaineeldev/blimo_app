@@ -17,7 +17,7 @@ export function Chatter() {
 }
 
 function ChatterBubble({ id, text, size }: { id: number; text: string; size: number }) {
-  // Placed when it appears, so it suits wherever the buddy is sitting by then.
+  // Follows the buddy: it flips under it near the top of the screen, even if carried there mid-sentence.
   const placement = useBubblePlacement(size)
   const [leaving, setLeaving] = useState(false)
   const done = () => useBuddyStore.getState().hush(id)
@@ -34,7 +34,7 @@ function ChatterBubble({ id, text, size }: { id: number; text: string; size: num
   }, [leaving, id])
 
   return (
-    <div className="bubble-anchor" style={placement.style}>
+    <div ref={placement.ref} className="bubble-anchor" style={placement.style}>
       <SpeechBubble text={text} tail={placement.tail} within={placement.within} leaving={leaving} onLeft={done} />
     </div>
   )

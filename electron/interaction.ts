@@ -153,17 +153,49 @@ export function registerWindowControls() {
 
   ipcMain.handle('window:screen-space', (event) => {
     const win = windowOf(event)
-    if (!win) return null
-    const content = win.getContentBounds()
-    const { workArea } = screen.getDisplayNearestPoint({
-      x: content.x + content.width / 2,
-      y: content.y + content.height / 2,
-    })
-    return {
-      left: workArea.x - content.x,
-      top: workArea.y - content.y,
-      right: workArea.x + workArea.width - content.x,
-      bottom: workArea.y + workArea.height - content.y,
-    }
+    return win ? screenSpaceOf(win) : null
+  })
+}
+
+/** The usable screen (less the taskbar or menu bar and Dock) around the buddy, relative to its window. */
+function screenSpaceOf(win: BrowserWindow) {
+  const content = win.getContentBounds()
+  const { workArea } = screen.getDisplayNearestPoint({
+    x: content.x + content.width / 2,
+    y: content.y + content.height / 2,
+  })
+  return {
+    left: workArea.x - content.x,
+    top: workArea.y - content.y,
+    right: workArea.x + workArea.width - content.x,
+    bottom: workArea.y + workArea.height - content.y,
+  }
+}
+
+/** Waits for the window to stop moving this long before telling the page, so a drag doesn't flood it. */
+const SPACE_SETTLE_MS = 120
+
+/**
+ * Tells the page where the screen edges are whenever that changes: the buddy was moved, tucked in, or a
+ * display changed. Speech bubbles and the stats pills use it to stay on screen.
+ */
+export function watchScreenSpace(win: BrowserWindow) {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const send = () => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      if (!win.isDestroyed()) win.webContents.send('buddy:screen-space', screenSpaceOf(win))
+    }, SPACE_SETTLE_MS)
+  }
+  win.on('move', send)
+  win.on('resize', send)
+  screen.on('display-metrics-changed', send)
+  screen.on('display-added', send)
+  screen.on('display-removed', send)
+  win.on('closed', () => {
+    clearTimeout(timer)
+    screen.off('display-metrics-changed', send)
+    screen.off('display-added', send)
+    screen.off('display-removed', send)
   })
 }
