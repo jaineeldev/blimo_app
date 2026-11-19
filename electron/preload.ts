@@ -1,27 +1,7 @@
 import { ipcRenderer, contextBridge, type IpcRendererEvent } from 'electron'
 
-// --------- Expose some API to the Renderer process ---------
-contextBridge.exposeInMainWorld('ipcRenderer', {
-  on(...args: Parameters<typeof ipcRenderer.on>) {
-    const [channel, listener] = args
-    return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
-  },
-  off(...args: Parameters<typeof ipcRenderer.off>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.off(channel, ...omit)
-  },
-  send(...args: Parameters<typeof ipcRenderer.send>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.send(channel, ...omit)
-  },
-  invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.invoke(channel, ...omit)
-  },
-
-  // You can expose other APTs you need here.
-  // ...
-})
+// The page only gets the named calls below, never ipcRenderer itself, so nothing it runs can reach
+// other channels in the main process.
 
 // Each subscription hands back its own unsubscribe, so React effects can clean up exactly what they added.
 function subscribe<T>(channel: string, callback: (payload: T) => void) {
@@ -53,6 +33,7 @@ contextBridge.exposeInMainWorld('buddy', {
   getIdleSeconds: () => ipcRenderer.invoke('system:idle-seconds'),
   setAlwaysOnTop: (onTop: boolean) => ipcRenderer.send('window:always-on-top', onTop),
   getScreenSpace: () => ipcRenderer.invoke('window:screen-space'),
+  onScreenSpace: (callback: (space: { left: number; top: number; right: number; bottom: number }) => void) => subscribe('buddy:screen-space', callback),
   setTrayIcon: (icon: { x1: string; x2: string; tooltip: string }) => ipcRenderer.send('tray:set-icon', icon),
   getMenuState: () => ipcRenderer.invoke('app:menu-state'),
   hide: () => ipcRenderer.send('window:hide'),

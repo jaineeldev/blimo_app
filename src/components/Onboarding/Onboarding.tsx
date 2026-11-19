@@ -219,7 +219,7 @@ export function Onboarding({ startDelay }: { startDelay: number }) {
   shownText.current = line.text
 
   return (
-    <div className="bubble-anchor" style={placement.style}>
+    <div ref={placement.ref} className="bubble-anchor" style={placement.style}>
       <SpeechBubble text={line.text} tail={placement.tail} within={placement.within} leaving={leaving} onLeft={finish}>
         {line.extra}
       </SpeechBubble>

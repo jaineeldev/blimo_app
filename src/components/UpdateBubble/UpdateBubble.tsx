@@ -177,7 +177,7 @@ function DownloadRing({ percent, size, colour }: { percent: number; size: number
 }
 
 function NoticeBubble({ notice, size, onDone }: { notice: UpdateNotice; size: number; onDone: () => void }) {
-  // Placed when it appears, so it suits wherever the buddy is sitting by then.
+  // Follows the buddy: it flips under it near the top of the screen, even if carried there mid-sentence.
   const placement = useBubblePlacement(size)
   const [leaving, setLeaving] = useState(false)
   const leave = useCallback(() => setLeaving(true), [])
@@ -266,7 +266,7 @@ function NoticeBubble({ notice, size, onDone }: { notice: UpdateNotice; size: nu
   }, [leaving, onDone])
 
   return (
-    <div className="bubble-anchor" style={placement.style}>
+    <div ref={placement.ref} className="bubble-anchor" style={placement.style}>
       <SpeechBubble text={text} tail={placement.tail} within={placement.within} leaving={leaving} onLeft={onDone}>
         {extra}
       </SpeechBubble>

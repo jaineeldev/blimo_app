@@ -18,8 +18,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     )}
   </React.StrictMode>,
 )
-
-// Use contextBridge (absent when the renderer is opened in a plain browser)
-window.ipcRenderer?.on('main-process-message', (_event, message) => {
-  console.log(message)
-})

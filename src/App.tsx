@@ -47,6 +47,7 @@ function App() {
     videoAt,
     asleep,
     aside,
+    talking,
   } = useBuddyStore(
     useShallow((s) => ({
       name: s.name,
@@ -73,6 +74,7 @@ function App() {
       videoAt: s.videoAt,
       asleep: s.ambient === 'sleepy',
       aside: s.aside,
+      talking: s.chatter !== null || s.updateBusy || !s.onboarded,
     })),
   )
   const launchedAt = useRef(Date.now())
@@ -175,7 +177,7 @@ function App() {
       <UpdateBubble />
       <Chatter />
       {/* Not while the panel or what's new card is open, or while you're holding the buddy. */}
-      <StatHUD hovered={hovered && !panelOpen && !whatsNew && !pressed} stats={showStats} song={song} size={size} peek={peek} />
+      <StatHUD hovered={hovered && !panelOpen && !whatsNew && !pressed} stats={showStats} song={song} size={size} talking={talking} />
       <AnimatePresence>{panelOpen && <SettingsPanel key="settings" />}</AnimatePresence>
       <AnimatePresence>{whatsNew && <WhatsNew key="whats-new" />}</AnimatePresence>
     </div>

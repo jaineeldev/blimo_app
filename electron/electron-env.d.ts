@@ -103,7 +103,6 @@ interface BodyRect {
 
 // Used in Renderer process, expose in `preload.ts`
 interface Window {
-  ipcRenderer: import('electron').IpcRenderer
   /** Missing when the renderer runs in a plain browser, such as the face gallery. */
   buddy?: {
     /** Which system it's running on ('win32', 'darwin'), for things that differ, like wording. */
@@ -142,6 +141,8 @@ interface Window {
     getIdleSeconds(): Promise<number>
     setAlwaysOnTop(onTop: boolean): void
     getScreenSpace(): Promise<import('../src/stores/buddyStore').ScreenSpace>
+    /** The screen edges again whenever the buddy moves or a display changes. */
+    onScreenSpace(callback: (space: import('../src/stores/buddyStore').ScreenSpace) => void): () => void
     /** Your buddy drawn at 16px and 32px as PNG data URLs, plus the tray tooltip. */
     setTrayIcon(icon: { x1: string; x2: string; tooltip: string }): void
     getMenuState(): Promise<MenuState>

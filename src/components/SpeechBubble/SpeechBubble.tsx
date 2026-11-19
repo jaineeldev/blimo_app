@@ -17,18 +17,21 @@ const TAIL_INSET = 20
  */
 function useKeepWithin(ref: RefObject<HTMLElement>, within: { left: number; right: number } | null | undefined, text: string) {
   const [place, setPlace] = useState({ shift: 0, tail: 0 })
+  const left = within?.left
+  const right = within?.right
   useLayoutEffect(() => {
     const el = ref.current
-    if (!el || !within) return
+    if (left === undefined || right === undefined || !el) return
     // offsetWidth ignores the pop-in scale, so this is the size it settles at.
     const half = el.offsetWidth / 2
     const centre = window.innerWidth / 2
-    const lo = within.left + EDGE_GAP + half
-    const hi = within.right - EDGE_GAP - half
+    const lo = left + EDGE_GAP + half
+    const hi = right - EDGE_GAP - half
     const shift = lo > hi ? 0 : Math.min(Math.max(centre, lo), hi) - centre
     const reach = Math.max(0, half - TAIL_INSET)
-    setPlace({ shift, tail: Math.max(-reach, Math.min(reach, -shift)) })
-  }, [ref, within, text])
+    const tail = Math.max(-reach, Math.min(reach, -shift))
+    setPlace((was) => (was.shift === shift && was.tail === tail ? was : { shift, tail }))
+  }, [ref, left, right, text])
   return place
 }
 
