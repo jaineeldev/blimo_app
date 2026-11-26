@@ -2,18 +2,21 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { roomAround, useScreenSpace } from '../../hooks/useScreenSpace'
 import { useSystemStats } from '../../hooks/useSystemStats'
+import { useBubbleSlot } from '../SpeechBubble/bubbleSlot'
 import './StatHUD.css'
 
 /** Hovering has to settle this long before the pills appear, so passing over the buddy doesn't flash them. */
 const SHOW_AFTER_MS = 400
 /** Only Windows can read the GPU (through the helper). */
 const HAS_GPU = window.buddy?.platform === 'win32'
-/** A single note, like the ones that float up while it bops, in a 12-unit box. */
 /** Space between the pills and the buddy, and between the pills and the screen's edges. */
 const GAP = 14
 const EDGE_GAP = 8
+/** Space between the pills and a speech bubble they stack past. */
+const STACK_GAP = 8
 /** Taken as the pills' size until they've been measured: one pill. */
 const GUESS = { width: 240, height: 32 }
+/** A single note, like the ones that float up while it bops, in a 12-unit box. */
 const NOTE =
   'M7.6 1.2V8.6C7.6 10.5 5.9 11.6 4.1 11.4 2.5 11.2 1.5 10.1 1.9 8.9 2.3 7.6 4.2 6.8 5.9 7.3V1.2ZM7.6 1.2C9.2 2 10.6 3.3 10 6.2 9.6 4.8 8.8 4.1 7.6 3.9Z'
 
@@ -24,16 +27,15 @@ interface StatHUDProps {
   /** The song that's playing, when "show what's playing" is on. */
   song: Song | null
   size: number
-  /** The buddy is saying something. Pills that would have to go above it wait, so they don't cover it. */
-  talking: boolean
 }
 
 /**
  * Slim pills under the buddy while you hover over it: how busy your computer is, and the song that's
  * playing. Near the bottom of the screen (above the taskbar or Dock) they go above it instead, and near
- * a side, or tucked behind a screen edge, they slide over to stay on screen.
+ * a side, or tucked behind a screen edge, they slide over to stay on screen. While the buddy is talking
+ * they stack past its speech bubble, never over it.
  */
-export function StatHUD({ hovered, stats: showStats, song, size, talking }: StatHUDProps) {
+export function StatHUD({ hovered, stats: showStats, song, size }: StatHUDProps) {
   const [shown, setShown] = useState(false)
   useEffect(() => {
     if (!hovered) {
@@ -59,11 +61,17 @@ export function StatHUD({ hovered, stats: showStats, song, size, talking }: Stat
     observer.current = new ResizeObserver(measure)
     observer.current.observe(el)
   }, [])
-  useEffect(() => () => observer.current?.disconnect(), [])
 
   const reach = Math.round(size * 0.36 + GAP)
   const room = roomAround(space, reach)
-  const above = room.below < box.height + EDGE_GAP && room.above > room.below
+  const bubble = useBubbleSlot()
+  // How far out from the buddy they'd start on each side: past the bubble if it's on that side.
+  const startAt = (below: boolean) => (bubble && bubble.below === below ? Math.max(reach, bubble.reach + STACK_GAP) : reach)
+  const roomFor = (below: boolean) => (below ? room.below : room.above) - (startAt(below) - reach)
+  const fits = (below: boolean) => roomFor(below) >= box.height + EDGE_GAP
+  // Under the buddy where they fit, else above; if neither fits, wherever there's more room.
+  const above = fits(true) ? false : fits(false) ? true : roomFor(false) > roomFor(true)
+  const from = startAt(!above)
   // Centred under the buddy unless that would run off a side of the screen.
   const centre = window.innerWidth / 2
   const half = box.width / 2
@@ -74,12 +82,12 @@ export function StatHUD({ hovered, stats: showStats, song, size, talking }: Stat
 
   return (
     <AnimatePresence>
-      {shown && any && !(above && talking) && (
+      {shown && any && (
         <motion.div
           key="stats"
           ref={ref}
           className={above ? 'stat-hud stat-hud--above' : 'stat-hud'}
-          style={{ ...(above ? { bottom: `calc(50% + ${reach}px)` } : { top: `calc(50% + ${reach}px)` }), marginLeft: shift }}
+          style={{ ...(above ? { bottom: `calc(50% + ${from}px)` } : { top: `calc(50% + ${from}px)` }), marginLeft: shift }}
           initial={{ opacity: 0, y: nudge, x: '-50%' }}
           animate={{ opacity: 1, y: 0, x: '-50%' }}
           exit={{ opacity: 0, y: nudge, x: '-50%' }}

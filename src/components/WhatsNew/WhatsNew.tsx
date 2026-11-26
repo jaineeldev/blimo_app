@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useBuddyStore } from '../../stores/buddyStore'
 import { WHATS_NEW, notesFor } from '../../whatsNew'
@@ -9,8 +9,8 @@ import './WhatsNew.css'
 
 const CARD_WIDTH = 268
 const HAS_HELPER = window.buddy?.platform === 'win32'
-/** Roughly how tall the card draws for a given number of notes (most wrap to two or three lines), so it can be centred on the buddy. */
-const cardHeight = (notes: number) => 120 + notes * 62
+/** Roughly how tall the card draws for a given number of notes, until it has been measured. */
+const guessHeight = (notes: number) => 120 + notes * 62
 
 /** A card beside the buddy listing what changed in a version, in the buddy's own words. */
 export function WhatsNew() {
@@ -22,9 +22,28 @@ export function WhatsNew() {
   const entry = (version && notesFor(version)) || WHATS_NEW[0]
   // Bopping to the beat needs the Windows helper, and is offered until it's on.
   const offerBeat = entry.offer === 'bopToBeat' && HAS_HELPER && !bopToBeat
+  // How tall it is with all its notes showing, so it's centred on the buddy and only scrolls when the
+  // screen really is too short for it.
+  const [natural, setNatural] = useState(() => guessHeight(entry.notes.length))
+  const observer = useRef<ResizeObserver | null>(null)
+  const measure = useCallback((card: HTMLElement | null) => {
+    observer.current?.disconnect()
+    observer.current = null
+    if (!card) return
+    const update = () => {
+      const border = card.offsetHeight - card.clientHeight
+      let height = border
+      for (const part of card.children) height += part instanceof HTMLUListElement ? part.scrollHeight : (part as HTMLElement).offsetHeight
+      setNatural((was) => (Math.abs(was - height) < 1 ? was : height))
+    }
+    update()
+    observer.current = new ResizeObserver(update)
+    observer.current.observe(card)
+    for (const part of card.children) observer.current.observe(part)
+  }, [])
   // The side is picked once on open, like the customise panel.
-  const [side] = useState(() => placePanel(size, screenSpace, CARD_WIDTH, cardHeight(entry.notes.length)).side)
-  const place = placePanel(size, screenSpace, CARD_WIDTH, cardHeight(entry.notes.length), side)
+  const [side] = useState(() => placePanel(size, screenSpace, CARD_WIDTH, guessHeight(entry.notes.length)).side)
+  const place = placePanel(size, screenSpace, CARD_WIDTH, natural, side)
 
   useEffect(() => {
     useBuddyStore.getState().react('happy', 1_200)
@@ -44,6 +63,7 @@ export function WhatsNew() {
   const offset = place.side === 'right' ? -12 : 12
   return (
     <motion.div
+      ref={measure}
       data-hit
       role="dialog"
       aria-labelledby="whats-new-title"
@@ -60,7 +80,7 @@ export function WhatsNew() {
       transition={{ type: 'spring', stiffness: 420, damping: 34 }}
     >
       <header className="whats-new-head">
-        <span className="panel-caption">what's new</span>
+        <span className="panel-caption">What’s new</span>
         <h2 id="whats-new-title">v{entry.version}</h2>
       </header>
       <ul className="whats-new-list">

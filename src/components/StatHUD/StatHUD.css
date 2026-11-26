@@ -7,6 +7,14 @@
   align-items: center;
   gap: 8px;
   pointer-events: none;
+  /* Glides out of the way when a speech bubble beside it grows, say when its buttons appear. */
+  transition: top 0.2s ease, bottom 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-hud {
+    transition: none;
+  }
 }
 
 /* Above the buddy (near the bottom of the screen), stacked the other way, so the order seen from the
@@ -21,9 +29,9 @@
   gap: 18px;
   padding: 7px 16px;
   border-radius: 999px;
-  background: #111113;
+  background: #141416;
   border: 1px solid #2a2a30;
-  color: #8d8d95;
+  color: #9a9aa3;
   font-size: 12px;
   line-height: 1.4;
   white-space: nowrap;

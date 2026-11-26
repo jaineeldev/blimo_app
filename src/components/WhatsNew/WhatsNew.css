@@ -45,7 +45,7 @@
 .panel .whats-new-offer {
   padding: 6px 12px;
   border: 1px solid var(--p-edge);
-  border-radius: 8px;
+  border-radius: 9px;
   color: var(--p-text);
   font-size: 12px;
 }
@@ -56,7 +56,7 @@
 
 .panel .whats-new-done {
   padding: 6px 14px;
-  border-radius: 8px;
+  border-radius: 9px;
   background: var(--p-text);
   color: var(--p-bg);
   font-size: 12px;

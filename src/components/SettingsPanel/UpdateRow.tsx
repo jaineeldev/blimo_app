@@ -20,10 +20,10 @@ function stepFrom(state: MenuState['update']): Step {
 }
 
 /**
- * The panel's update button. It checks when pressed, then says what happened right on the button:
- * nothing new, or the usual update steps (downloading, then restart to update).
+ * The updates row on the panel's home page. It checks when pressed, then says what happened right in
+ * the row: up to date, or the usual update steps (downloading, then restart to update).
  */
-export function UpdateButton({ menu }: { menu: MenuState }) {
+export function UpdateRow({ menu }: { menu: MenuState }) {
   const [step, setStep] = useState<Step>(() => stepFrom(menu.update))
 
   useEffect(() => {
@@ -33,7 +33,11 @@ export function UpdateButton({ menu }: { menu: MenuState }) {
       if (notice.status === 'ready') setStep({ status: 'ready', version: notice.version })
       else if (notice.status === 'available') setStep({ status: 'available', version: notice.version })
       else if (notice.status === 'downloading')
-        setStep((s) => ({ status: 'downloading', version: notice.version, percent: s.status === 'downloading' ? s.percent : null }))
+        setStep((s) => ({
+          status: 'downloading',
+          version: notice.version,
+          percent: s.status === 'downloading' ? s.percent : null,
+        }))
       else if (notice.status !== 'updated') setStep({ status: notice.status })
     })
     // Progress comes for background downloads too. It stops (null) when one finishes, with "ready"
@@ -41,7 +45,11 @@ export function UpdateButton({ menu }: { menu: MenuState }) {
     const offProgress = bridge.onUpdateProgress((percent) =>
       setStep((s) => {
         if (percent === null) return s.status === 'downloading' ? { status: 'idle' } : s
-        return { status: 'downloading', version: s.status === 'downloading' ? s.version : null, percent }
+        return {
+          status: 'downloading',
+          version: s.status === 'downloading' ? s.version : null,
+          percent,
+        }
       }),
     )
     return () => {
@@ -50,7 +58,7 @@ export function UpdateButton({ menu }: { menu: MenuState }) {
     }
   }, [])
 
-  // "No updates available" steps aside after a moment, so you can check again another time.
+  // "Up to date" steps aside after a moment, so you can check again another time.
   useEffect(() => {
     if (step.status !== 'current') return
     const timer = window.setTimeout(() => setStep({ status: 'idle' }), NOTHING_NEW_MS)
@@ -61,48 +69,46 @@ export function UpdateButton({ menu }: { menu: MenuState }) {
     setStep({ status: 'checking' })
     window.buddy?.checkForUpdates()
   }
+  const install = () => window.buddy?.installUpdate()
 
-  if (!menu.canUpdate) {
-    return (
-      <button className="foot-btn" disabled>
-        <RefreshIcon /> Updates: installed app only
-      </button>
-    )
-  }
+  if (!menu.canUpdate) return <Row icon={<RefreshIcon />} value="Installed app only" />
   switch (step.status) {
     case 'idle':
-      return <Action icon={<RefreshIcon />} label="Check for updates" onClick={check} />
+      return <Row icon={<RefreshIcon />} value="Check now" onClick={check} />
     case 'checking':
-      return <Action icon={<RefreshIcon spinning />} label="Checking for updates…" />
+      return <Row icon={<RefreshIcon spinning />} value="Checking…" />
     case 'current':
-      return <Action icon={<CheckIcon />} label="No updates available" />
+      return <Row icon={<CheckIcon />} value="Up to date" />
     case 'failed':
-      return <Action icon={<RefreshIcon />} label="Couldn't check. Try again?" onClick={check} />
-    case 'downloading': {
-      const what = step.version ? `v${step.version}` : 'update'
-      return <Action icon={<DownloadIcon />} label={`Downloading ${what}…${step.percent === null ? '' : ` ${step.percent}%`}`} />
-    }
+      return <Row icon={<RefreshIcon />} value="Couldn't check. Retry" onClick={check} />
+    case 'downloading':
+      return <Row icon={<DownloadIcon />} value={`Downloading${step.percent === null ? '…' : ` ${step.percent}%`}`} />
     case 'ready':
-      return <Action icon={<RefreshIcon />} label={`Restart to update to v${step.version}`} onClick={() => window.buddy?.installUpdate()} />
+      return <Row icon={<RefreshIcon />} value={`Restart for v${step.version}`} onClick={install} strong />
     case 'available':
-      return <Action icon={<DownloadIcon />} label={`Download v${step.version}`} onClick={() => window.buddy?.installUpdate()} />
+      return <Row icon={<DownloadIcon />} value={`Get v${step.version}`} onClick={install} strong />
     case 'restarting':
-      return <Action icon={<RefreshIcon spinning />} label="Restarting…" />
+      return <Row icon={<RefreshIcon spinning />} value="Restarting…" />
   }
 }
 
-/** A footer button. Without `onClick` it's a status line in the button's place, not greyed out like a disabled one. */
-function Action({ icon, label, onClick }: { icon: ReactNode; label: string; onClick?: () => void }) {
+/** A home-page row. Without `onClick` it's a status line in the row's place, not greyed out like a disabled one. */
+function Row({ icon, value, onClick, strong = false }: { icon: ReactNode; value: string; onClick?: () => void; strong?: boolean }) {
   return (
-    <button className="foot-btn" aria-disabled={!onClick || undefined} onClick={onClick} aria-live="polite">
-      {icon} {label}
+    <button className="nav-row" aria-disabled={!onClick || undefined} onClick={onClick}>
+      {icon}
+      <span className="nav-label">Updates</span>
+      <span className={strong ? 'nav-value nav-value--strong' : 'nav-value'} aria-live="polite">
+        {value}
+      </span>
     </button>
   )
 }
 
 const iconProps = {
-  width: 13,
-  height: 13,
+  width: 16,
+  height: 16,
+  className: 'icon',
   viewBox: '0 0 24 24',
   fill: 'none',
   stroke: 'currentColor',
@@ -114,7 +120,7 @@ const iconProps = {
 
 function RefreshIcon({ spinning = false }: { spinning?: boolean }) {
   return (
-    <svg {...iconProps} className={spinning ? 'spin' : undefined}>
+    <svg {...iconProps} className={spinning ? 'icon spin' : 'icon'}>
       <path d="M20 12a8 8 0 1 1-2.34-5.66" />
       <path d="M20 4v4h-4" />
     </svg>

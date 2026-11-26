@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { roomAround, useScreenSpace } from '../../hooks/useScreenSpace'
+import { setBubbleSlot } from './bubbleSlot'
 
 /** Space kept between a bubble and the top or bottom of the screen. */
 const EDGE_GAP = 8
@@ -33,12 +34,15 @@ export function useBubblePlacement(size: number): {
     observer.current = new ResizeObserver(() => setHeight(el.offsetHeight || GUESS_HEIGHT))
     observer.current.observe(el)
   }, [])
-  useEffect(() => () => observer.current?.disconnect(), [])
 
   const reach = size * 0.36 + 10
   const room = roomAround(space, reach)
   const need = height + EDGE_GAP
   const below = room.above < need && room.below > room.above
+  // Says where it is, so the stats and song pills can stack past it instead of covering it.
+  const [owner] = useState(() => Symbol('bubble'))
+  useLayoutEffect(() => setBubbleSlot(owner, { below, reach: reach + height }), [owner, below, reach, height])
+  useLayoutEffect(() => () => setBubbleSlot(owner, null), [owner])
   return {
     ref,
     style: below ? { top: `calc(50% + ${reach}px)` } : { bottom: `calc(50% + ${reach}px)` },

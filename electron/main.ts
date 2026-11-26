@@ -53,9 +53,11 @@ if (!isFirstInstance) {
 
 /**
  * Room for the buddy in the middle and the settings panel on either side, clear of a speech bubble
- * over the buddy. Empty space is click-through, so the extra size never gets in the way.
+ * over the buddy. Tall enough that near the top or bottom of the screen, where part of the window is
+ * off it, the panel still has most of its height. Empty space is click-through, so the extra size never
+ * gets in the way, and the buddy stays in the middle, so a saved spot from a smaller window still fits.
  */
-const WINDOW_SIZE = { width: 920, height: 620 }
+const WINDOW_SIZE = { width: 920, height: 1000 }
 
 function createWindow() {
   win = new BrowserWindow({

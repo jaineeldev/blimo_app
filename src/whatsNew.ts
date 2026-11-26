@@ -6,6 +6,15 @@
  */
 export const WHATS_NEW: { version: string; notes: string[]; offer?: 'bopToBeat' }[] = [
   {
+    version: '1.3.0',
+    notes: [
+      'My panel has been redone. Right-click me and you get a short list of how I’m set up, with a page for each thing.',
+      'Every switch says what it does now, so there’s less guessing.',
+      'Want a friend to have a buddy just like me? Open Share in my panel and copy my code. They paste it into theirs and get my name and look.',
+      'Near the top or bottom of the screen, my speech bubbles, stats and panel all fit properly now, without covering each other.',
+    ],
+  },
+  {
     version: '1.2.1',
     notes: [
       "You can put me anywhere now, even right on top of the taskbar, the Dock or the menu bar, and I'll stay there.",

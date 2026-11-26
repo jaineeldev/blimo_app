@@ -98,25 +98,27 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 
 **Lives in your tray.** The tray icon (in the menu bar on a Mac) is your own buddy, and it changes whenever your buddy does.
 
-**Keeps itself up to date.** New versions download in the background, with a little progress ring floating over your buddy's head, and it tells you in a speech bubble when one is ready. Restart it there and then, or it updates the next time it closes. Either way, it pops back up on the new version, tells you so, and can show you what's new. Want to check right now? Press **Check for updates** at the bottom of the panel. On a Mac it doesn't update itself yet: it tells you when there's a new version and takes you to the download.
+**Keeps itself up to date.** New versions download in the background, with a little progress ring floating over your buddy's head, and it tells you in a speech bubble when one is ready. Restart it there and then, or it updates the next time it closes. Either way, it pops back up on the new version, tells you so, and can show you what's new. Want to check right now? Press **Updates** in its panel. On a Mac it doesn't update itself yet: it tells you when there's a new version and takes you to the download.
 
 ## Make it yours
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/dark/customise.gif">
-    <img src="docs/light/customise.gif" alt="The settings panel beside Sora. Sora is renamed Pip and its face changes with every letter, then it gets the kitty shape, a pink pastel colour and square eyes. Typing Sora back and pressing unpin all brings the original back, and the panel closes." width="420">
+    <img src="docs/light/customise.gif" alt="Sora's panel opens on a short list of how it's set up. On the Look page Sora gets the kitty shape, a pink pastel colour and square eyes, and back on the list it reads Kitty, pink, squares. Share shows Sora's code and Copy code turns to Copied. Back to Sora's own look brings the original back, and the panel closes." width="420">
   </picture>
 </p>
 
-Right-click your buddy to open its panel:
+Right-click your buddy to open its panel. It starts with a short list of how your buddy is set up, and each row opens a page of its own:
 
-- Rename it (its face changes as you type), or roll a random name.
-- Pick a body shape, including six hand-drawn extras: mochi, bean, ghost, kitty, sprout and slime.
-- Choose its eyes (dots, domes, squares, capsules or visor) and fine-tune them: size, width, spacing, squareness, tilt, height and how far left or right they sit.
-- Set its colour and tone, its size and its opacity.
-- Turn cursor-following, always-on-top, stats on hover, start with Windows (open at login on a Mac), bopping to music and watching videos, bopping to the beat, showing what's playing, stepping aside for full screen, and quiet mode on or off. Quiet mode stops the chatter, but your buddy still tells you about updates.
-- Check for updates, hide it or quit it, from the buttons at the bottom.
+- **Name**, at the top: rename it (its face changes as you type), or roll a random name.
+- **Look**: pick a body shape, including six hand-drawn characters (mochi, bean, ghost, kitty, sprout and slime), a colour and shade, and its eyes (dots, domes, squares, capsules or visor). Fine-tune the eyes too: size, width, spacing, squareness, tilt, height and how far left or right they sit.
+- **Mood**: let it react to you and your computer, or keep it in one mood.
+- **Size**: how big it is, and how see-through.
+- **Music and videos** (Windows): bopping along and watching videos with you, bopping to the beat, and showing what's playing.
+- **Behaviour**: cursor-following, always on top, stepping aside for full screen, start with Windows (open at login on a Mac), stats on hover, and quiet mode. Each switch says what it does. Quiet mode stops the chatter, but your buddy still tells you about updates.
+- **Share**: copy your buddy's code and send it to a friend. They paste it into their Blimo and get the same buddy. A code holds only the name and look.
+- Updates, what's new, and buttons to hide or quit it.
 
 Everything saves automatically, and your buddy is waiting just as you left it next time.
 
@@ -139,9 +141,9 @@ Blimo is free, for **Windows 10 and 11** and **Macs** (Apple Silicon and Intel).
 
 The Mac version is brand new, so if anything looks off, please [open an issue](https://github.com/jaineeldev/blimo_app/issues).
 
-To close it, right-click your buddy and press **Quit Blimo** at the bottom of the panel, or right-click the tray icon and choose **Quit**.
+To close it, right-click your buddy and press **Quit** at the bottom of the panel, or right-click the tray icon and choose **Quit**.
 
-Want it there every time you log in? Right-click your buddy and turn on **start with Windows** (**open at login** on a Mac), or tick it in the tray menu.
+Want it there every time you log in? Right-click your buddy, open **Behaviour** and turn on **Start with Windows** (**Open at login** on a Mac), or tick it in the tray menu.
 
 You only need to install it once. On Windows it keeps itself up to date after that, and your buddy tells you when a new version is ready. The one exception: if you installed the very first version (v0.1.0), download the newest one by hand once, because that version can't update itself.
 
@@ -159,7 +161,7 @@ You only need to install it once. On Windows it keeps itself up to date after th
 - It connects to GitHub, and nothing else, to check for new versions. It doesn't collect or send any data about you.
 - On a Mac there's no helper, so it doesn't check music, videos or the graphics card.
 - It starts with Windows (or opens at login on a Mac) only if you turn that option on.
-- It doesn't use your camera, microphone, location, clipboard or files.
+- It doesn't use your camera, microphone, location or files. It only touches your clipboard when you press **Copy code** in Share, to put your buddy's code there, and never reads it.
 
 The SmartScreen warning is there because the installer isn't code-signed yet, not because of anything the app does.
 
@@ -265,7 +267,7 @@ blimo_app/
 │   │   ├── SpeechBubble/    # What the buddy says, and where the bubble goes
 │   │   ├── UpdateBubble/    # The buddy's news when an update is ready
 │   │   ├── WhatsNew/        # The what's new card shown after an update
-│   │   └── StatHUD/         # (planned)
+│   │   └── StatHUD/         # The stats and song pills on hover
 │   ├── hooks/               # Gaze, mouse handling, reactions, tray icon, (planned) system stats
 │   ├── stores/              # Buddy state and saved settings
 │   ├── dev/Gallery.tsx      # Face browser, opened with ?gallery
@@ -342,6 +344,14 @@ Blimo is built in public, one phase at a time. Ticked items have shipped; the re
 - [x] Bop to the beat: listens for your music's tempo and bops in time, off until you turn it on
 - [x] Show what's playing: the song and artist on hover, off until you turn it on
 
+#### ✅ Shipped — v1.3, a friendlier panel
+> The panel was rebuilt to be easier to find your way around, and buddies can be shared.
+
+- [x] A new panel: a short list of how your buddy is set up, with a page for each thing and a way back
+- [x] Every switch says what it does, in plain words
+- [x] Buddy codes: copy your buddy's code, or paste in a friend's to get their buddy
+- [x] Speech bubbles, the stats and the panel fit near the top and bottom of the screen, without covering each other
+
 #### Then — Real C under the hood
 > The stats already work. Next, the part that reads them gets rewritten in C, through the Windows API.
 
@@ -354,7 +364,7 @@ Blimo is built in public, one phase at a time. Ticked items have shipped; the re
 
 - [ ] Focus timer from the tray: a focused face while you work, and a celebration at break time
 - [ ] Gentle reminders, off by default: drink water, stretch, it's late so go to bed
-- [ ] Buddy codes: share your buddy (name and pinned look) as a short code a friend can paste in
+- [x] Buddy codes: share your buddy (name and pinned look) as a short code a friend can paste in
 - [x] Secret names that unlock a reaction of their own, and a sparkle
 - [x] Little milestones it remembers and mentions once: pets, belly rubs, anniversaries
 - [ ] A friend for your buddy: two buddies that notice and react to each other

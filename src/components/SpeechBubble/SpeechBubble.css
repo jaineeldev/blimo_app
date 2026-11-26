@@ -8,11 +8,11 @@
 }
 
 .bubble {
-  --b-bg: #111113;
-  --b-line: #26262b;
+  --b-bg: #141416;
+  --b-line: #2a2a30;
   --b-text: #ececef;
-  --b-muted: #8d8d95;
-  --b-faint: #5f5f67;
+  --b-muted: #9a9aa3;
+  --b-faint: #686871;
   --b-focus: #9db8ff;
 
   /* Its max-width is BUBBLE_MAX_WIDTH in SpeechBubble.tsx, which panels keep clear of; border-box so
@@ -24,7 +24,7 @@
   background: var(--b-bg);
   border: 1px solid var(--b-line);
   border-radius: 14px;
-  box-shadow: 0 12px 30px rgb(0 0 0 / 0.4);
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.45);
   color: var(--b-text);
   font-size: 13px;
   line-height: 1.45;
@@ -96,7 +96,7 @@
 .bubble-btn {
   padding: 5px 12px;
   border: 1px solid var(--b-text);
-  border-radius: 999px;
+  border-radius: 9px;
   background: var(--b-text);
   color: var(--b-bg);
   font-size: 12px;
