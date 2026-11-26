@@ -22,6 +22,8 @@
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
 </p>
 
+<p align="center"><sub>If Blimo made you smile, a ⭐ helps other people find it.</sub></p>
+
 ---
 
 ## Meet your buddy
@@ -98,7 +100,7 @@ Then it just lives there. It sits on top of your windows, keeps an eye on your c
 
 **Lives in your tray.** The tray icon (in the menu bar on a Mac) is your own buddy, and it changes whenever your buddy does.
 
-**Keeps itself up to date.** New versions download in the background, with a little progress ring floating over your buddy's head, and it tells you in a speech bubble when one is ready. Restart it there and then, or it updates the next time it closes. Either way, it pops back up on the new version, tells you so, and can show you what's new. Want to check right now? Press **Updates** in its panel. On a Mac it doesn't update itself yet: it tells you when there's a new version and takes you to the download.
+**Keeps itself up to date.** New versions download in the background, with a little progress ring floating over your buddy's head, and it tells you in a speech bubble when one is ready. Restart it there and then, or it updates the next time it closes. Either way, it pops back up on the new version, tells you so, and can show you what's new. Want to check right now? Press **Updates** in its panel. On a Mac it doesn't update itself yet: it tells you when there's a new version and takes you to the download. To hear about new versions on GitHub too, press **Watch** at the top of this page, then **Custom**, and tick **Releases**.
 
 ## Make it yours
 
